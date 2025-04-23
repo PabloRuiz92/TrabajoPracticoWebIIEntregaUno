@@ -29,16 +29,29 @@ try {
 }
 
 //CRUD
-//GET: todas las películas
+//GET: /peliculas/ muestra todas las películas en formato JSON
 router.get("/", (req, res) => {
   res.status(200).json(peliculas);
 });
 
-//POST: agregar película nueva
+//POST: /peliculas/ agrega película nueva
 router.post("/", (req, res) => {
   const nueva = { id: peliculas.length + 1, ...req.body };
   peliculas.push(nueva);
   res.status(201).json({ mensaje: "Película agregada", pelicula: nueva });
+});
+
+//PUT: /peliculas/:id actualiza una película por ID
+router.put('/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = peliculas.findIndex(p => p.id === id);
+
+  if (index !== -1) {
+    peliculas[index] = { id, ...req.body }; // Reemplazamos los datos
+    res.status(200).json({ mensaje: 'Película actualizada', pelicula: peliculas[index] });
+  } else {
+    res.status(200).json({ error: 'Película no encontrada' });
+  }
 });
 
 module.exports = router;
