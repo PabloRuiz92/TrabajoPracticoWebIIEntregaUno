@@ -73,4 +73,13 @@ router.delete("/:id", (req, res) => {
   res.json({ mensaje: "Película eliminada" });
 });
 
+//Filtros con logica particular
+
+///GET: /peliculas/anio/:anio busca por año
+router.get("/anio/:anio", (req, res) => {
+  const anio = req.params.anio;
+  const filtrado = peliculas.filter((e) => e.indice_tiempo.startsWith(anio));
+  res.json(filtrado);
+});
+
 module.exports = router;
