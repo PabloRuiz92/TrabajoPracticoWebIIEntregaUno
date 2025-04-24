@@ -4,11 +4,17 @@ const router = express.Router();
 //fs es un módulo para manejar archivos y lo vamos a necesitar para leer el JSON
 const fs = require("fs");
 
+//URL de la DB usada: 
+//https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_40ce52b7-2240-4c58-b662-803b97df0bc0
 //Definimos origen del JSON en un constante para su uso posterior
 const RUTA_JSON = "./estrenosCinePorOrigen.json";
 
 //Iniciamos el array peliculas para ingresarle los datos del JSON
 let peliculas = [];
+
+function peliculaNoEncontrada(res) {
+  return res.status(200).json({ error: "Película no encontrada" });
+}
 
 //Aca intentamos leer y guardar el JSON en el array peliculas
 try {
@@ -42,16 +48,29 @@ router.post("/", (req, res) => {
 });
 
 //PUT: /peliculas/:id actualiza una película por ID
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = peliculas.findIndex(p => p.id === id);
 
   if (index !== -1) {
     peliculas[index] = { id, ...req.body }; // Reemplazamos los datos
-    res.status(200).json({ mensaje: 'Película actualizada', pelicula: peliculas[index] });
+    res.status(200).json({ mensaje: "Película actualizada", pelicula: peliculas[index] });
   } else {
-    res.status(200).json({ error: 'Película no encontrada' });
+    return peliculaNoEncontrada(res);
   }
+});
+
+//DELETE: /peliculas/:id elimina una película por ID
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+  const index = peliculas.findIndex(p => p.id == id);
+
+  if (index === -1) {
+    return peliculaNoEncontrada(res);
+  }
+
+  peliculas.splice(index, 1);
+  res.json({ mensaje: "Película eliminada" });
 });
 
 module.exports = router;
