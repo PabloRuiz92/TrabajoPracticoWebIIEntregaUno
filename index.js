@@ -5,8 +5,6 @@ app.use(express.json());
 
 const PORT = 7050;
 
-app.use(express.json());
-
 const peliculasRouter = require("./rutas/peliculas");
 app.use("/peliculas", peliculasRouter);
 
