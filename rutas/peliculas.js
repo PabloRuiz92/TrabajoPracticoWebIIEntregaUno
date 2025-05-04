@@ -40,6 +40,13 @@ router.get("/", (req, res) => {
   res.status(200).json(peliculas);
 });
 
+router.get("/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = peliculas.findIndex(p => p.id === id);
+
+  res.status(200).json(peliculas[index]);
+});
+
 //POST: /peliculas/ agrega película nueva
 router.post("/", (req, res) => {
   const nueva = { id: peliculas.length + 1, ...req.body };
