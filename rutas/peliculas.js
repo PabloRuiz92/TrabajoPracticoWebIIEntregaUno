@@ -89,4 +89,18 @@ router.get("/anio/:anio", (req, res) => {
   res.json(filtrado);
 });
 
+///GET: /peliculas/anio/:anio/:anio2 busca en ese rango de años
+router.get("/anio/:anio/:anio2", (req, res) => {
+  const anioInicio = parseInt(req.params.anio);
+  const anioFin = parseInt(req.params.anio2);
+
+  const filtrado = peliculas.filter(pelicula => {
+    const anioPelicula = parseInt(pelicula.indice_tiempo.substring(0, 4));
+    return anioPelicula >= anioInicio && anioPelicula <= anioFin;
+  });
+
+  res.json(filtrado);
+});
+
+
 module.exports = router;
