@@ -13,7 +13,7 @@ const RUTA_JSON = "./estrenosCinePorOrigen.json";
 let peliculas = [];
 
 function peliculaNoEncontrada(res) {
-  return res.status(200).json({ error: "Película no encontrada" });
+  return res.json({ error: "Película no encontrada" });
 }
 
 //Aca intentamos leer y guardar el JSON en el array peliculas
@@ -37,14 +37,14 @@ try {
 //CRUD
 //GET: /peliculas/ muestra todas las películas en formato JSON
 router.get("/", (req, res) => {
-  res.status(200).json(peliculas);
+  res.json({ mensaje: "Listando Peliculas", peliculas});
 });
 
 //POST: /peliculas/ agrega película nueva
 router.post("/", (req, res) => {
   const nueva = { id: peliculas.length + 1, ...req.body };
   peliculas.push(nueva);
-  res.status(201).json({ mensaje: "Película agregada", pelicula: nueva });
+  res.json({ mensaje: "Película agregada", pelicula: nueva });
 });
 
 //PUT: /peliculas/:id actualiza una película por ID
@@ -54,7 +54,7 @@ router.put("/:id", (req, res) => {
 
   if (index !== -1) {
     peliculas[index] = { id, ...req.body }; // Reemplazamos los datos
-    res.status(200).json({ mensaje: "Película actualizada", pelicula: peliculas[index] });
+    res.json({ mensaje: "Película actualizada", pelicula: peliculas[index] });
   } else {
     return peliculaNoEncontrada(res);
   }
@@ -79,7 +79,7 @@ router.delete("/:id", (req, res) => {
 router.get("/anio/:anio", (req, res) => {
   const anio = req.params.anio;
   const filtrado = peliculas.filter((e) => e.indice_tiempo.startsWith(anio));
-  res.json(filtrado);
+  res.json({ mensaje: "Filtrando por año: " + anio, filtrado });
 });
 
 module.exports = router;
