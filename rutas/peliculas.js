@@ -149,7 +149,7 @@ filtrado.forEach((p) => {
 res.status(200).json({
   mensaje: `Total entre ${desde} y ${hasta}`,
   total_estrenos_nacionales: `Nacionales: ${totalNacionales}`,
-  total_estrenos_extranjeros: `Extrangeras: ${totalExtranjeros}`,
+  total_estrenos_extranjeros: `Extranjeras: ${totalExtranjeros}`,
 });
 
 });
