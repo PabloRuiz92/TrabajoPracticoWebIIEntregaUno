@@ -92,13 +92,30 @@ router.delete("/:id", (req, res) => {
 ///GET: /peliculas/anio/:anio busca por año
 router.get("/anio/:anio", (req, res) => {
   const anio = req.params.anio;
-  const filtrado = peliculas.filter((e) => e.indice_tiempo.startsWith(anio));
+  const filtrado = peliculas.filter((p) => p.indice_tiempo.startsWith(anio));
 
   if (filtrado.length > 0) {
     res.json({ mensaje: `Películas del año ${anio}`, peliculas: filtrado });
   } else {
     return res.json({ error: `No se encontraron películas del año ${anio}` });
   }
+});
+
+///GET: /peliculas/anios/:desde/:hasta busca por rango de años
+router.get("/anios/:desde/:hasta", (req, res) => {
+  const desde = parseInt(req.params.desde);
+  const hasta = parseInt(req.params.hasta);
+
+const filtrado = peliculas.filter((p) => {
+  const anio = parseInt(p.indice_tiempo.slice(0, 4));
+  return anio >= desde && anio <= hasta;
+});
+
+if (filtrado.length > 0) {
+  res.json({mensaje: `Películas entre ${desde} y ${hasta}` , peliculas: filtrado,});
+} else {
+  res.json({ error: `No se encontraron películas entre ${desde} y ${hasta}` });
+}
 });
 
 module.exports = router;
