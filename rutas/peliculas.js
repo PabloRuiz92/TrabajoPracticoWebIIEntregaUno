@@ -47,6 +47,20 @@ router.post("/", (req, res) => {
   res.json({ mensaje: "Película agregada", pelicula: nueva });
 });
 
+//GET: /peliculas/:id busca en peliculas por ID
+router.get("/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = peliculas.findIndex((p) => p.id === id);
+  
+  if (index !== -1) {
+    const pelicula = peliculas[index];
+    res.status(200).json({ mensaje: "Película encontrada", pelicula });
+  } else {
+    return peliculaNoEncontrada(res);
+  }
+
+});
+
 //PUT: /peliculas/:id actualiza una película por ID
 router.put("/:id", (req, res) => {
   const id = parseInt(req.params.id);
@@ -60,17 +74,17 @@ router.put("/:id", (req, res) => {
   }
 });
 
-//DELETE: /peliculas/:id elimina una película por ID
+// DELETE: /peliculas/:id elimina una película por ID
 router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  const index = peliculas.findIndex(p => p.id == id);
+  const id = parseInt(req.params.id);
+  const index = peliculas.findIndex(p => p.id === id);
 
-  if (index === -1) {
+  if (index !== -1) {
+    peliculas.splice(index, 1);
+    res.json({ mensaje: "Película eliminada" });
+  } else {
     return peliculaNoEncontrada(res);
   }
-
-  peliculas.splice(index, 1);
-  res.json({ mensaje: "Película eliminada" });
 });
 
 //Filtros con logica particular
@@ -79,7 +93,12 @@ router.delete("/:id", (req, res) => {
 router.get("/anio/:anio", (req, res) => {
   const anio = req.params.anio;
   const filtrado = peliculas.filter((e) => e.indice_tiempo.startsWith(anio));
-  res.json({ mensaje: "Filtrando por año: " + anio, filtrado });
+
+  if (filtrado.length > 0) {
+    res.json({ mensaje: `Películas del año ${anio}`, peliculas: filtrado });
+  } else {
+    return res.json({ error: `No se encontraron películas del año ${anio}` });
+  }
 });
 
 module.exports = router;
