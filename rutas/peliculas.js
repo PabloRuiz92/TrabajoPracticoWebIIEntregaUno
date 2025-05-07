@@ -118,4 +118,45 @@ if (filtrado.length > 0) {
 }
 });
 
+///GET: /peliculas/aniosTotal/:desde/:hasta busca por rango de años y mustra el total de peliculas extranjeras/locales
+router.get("/aniosTotal/:desde/:hasta", (req, res) => {
+  const desde = parseInt(req.params.desde);
+  const hasta = parseInt(req.params.hasta);
+
+const filtrado = peliculas.filter((p) => {
+  const anio = parseInt(p.indice_tiempo.slice(0, 4));
+  return anio >= desde && anio <= hasta;
+});
+
+if (filtrado.length === 0) {return res.json({ error: `No se encontraron películas entre ${desde} y ${hasta}` });
+}
+
+// Inicializar contadores
+let totalNacionales = 0;
+let totalExtranjeros = 0;
+
+// Acumular sumas
+filtrado.forEach((p) => {
+  //Usamos el || 0 por si el parseInt devuelve NaN
+  totalNacionales += parseInt(p.estrenos_film_nacional) || 0;
+  totalExtranjeros += parseInt(p.estrenos_film_extranjero) || 0;
+});
+
+res.status(200).json({
+  mensaje: `Total entre ${desde} y ${hasta}`,
+  total_estrenos_nacionales: `Nacionales: ${totalNacionales}`,
+  total_estrenos_extranjeros: `Extrangeras: ${totalExtranjeros}`,
+});
+
+});
+
+/*Aca un ejemplo del formato original del Json, nosotros agregamos el campo ID al principio
+  {
+    "indice_tiempo": "2018-01-01",
+    "estrenos_film_nacional": 239,
+    "estrenos_film_extranjero": 309
+  },
+*/
+
+
 module.exports = router;
