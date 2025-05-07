@@ -47,13 +47,15 @@ try {
 }
 
 //CRUD
-//GET: /peliculas/ muestra todos las periodos del JSON
+//GET: /peliculas/ 
+// Muestra todos las periodos del JSON
 router.get("/", (req, res) => {
   res.json({ mensaje: "Listando Periodos", periodos });
 
 });
 
-//POST: /peliculas/ agrega película nueva
+//POST: /peliculas/ 
+// Agrega película nueva
 router.post("/", (req, res) => {
   const nueva = { id: periodos.length + 1, ...req.body };
   periodos.push(nueva);
@@ -61,7 +63,8 @@ router.post("/", (req, res) => {
 
 });
 
-//GET: /peliculas/:id busca en periodos por ID
+//GET: /peliculas/:id 
+// Busca en periodos por ID
 router.get("/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = periodos.findIndex((p) => p.id === id);
@@ -75,7 +78,8 @@ router.get("/:id", (req, res) => {
 
 });
 
-//PUT: /peliculas/:id actualiza un periodo por ID
+//PUT: /peliculas/:id 
+// Actualiza un periodo por ID
 router.put("/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = periodos.findIndex((p) => p.id === id);
@@ -89,7 +93,8 @@ router.put("/:id", (req, res) => {
 
 });
 
-//DELETE: /peliculas/:id elimina un periodo por ID
+//DELETE: /peliculas/:id 
+// Elimina un periodo por ID
 router.delete("/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = periodos.findIndex((p) => p.id === id);
@@ -105,7 +110,8 @@ router.delete("/:id", (req, res) => {
 
 //Filtros con logica particular
 
-//GET: /peliculas/anio/:anio busca por año
+//GET: /peliculas/anio/:anio 
+// Busca periodo por año
 router.get("/anio/:anio", (req, res) => {
   const anio = req.params.anio;
   const filtrado = periodos.filter((p) => p.indice_tiempo.startsWith(anio));
@@ -118,7 +124,8 @@ router.get("/anio/:anio", (req, res) => {
 
 });
 
-//GET: /peliculas/anios/:desde/:hasta busca por rango de años
+//GET: /peliculas/anios/:desde/:hasta
+// Muestra los periodos entre 2 años.
 router.get("/anios/:desde/:hasta", (req, res) => {
   let desde = parseInt(req.params.desde);
   let hasta = parseInt(req.params.hasta);
@@ -219,13 +226,5 @@ router.get("/comparaAnios/:anio1/:anio2", (req, res) => {
     });
   }
 });
-
-/*Aca un ejemplo del formato original del Json, nosotros agregamos el campo ID al principio
-  {
-    "indice_tiempo": "2018-01-01",
-    "estrenos_film_nacional": 239,
-    "estrenos_film_extranjero": 309
-  },
-*/
 
 module.exports = router;
