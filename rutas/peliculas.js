@@ -11,8 +11,8 @@ function indiceIncorrecto(res) {
 }
 
 //Funciones de filtro por rango de anios
-function filtrarPorRango(peliculas, desde, hasta) {
-  return peliculas.filter((p) => {
+function filtrarPorRango(periodos, desde, hasta) {
+  return periodos.filter((p) => {
     const anio = parseInt(p.indice_tiempo.slice(0, 4));
     return anio >= desde && anio <= hasta;
   });
@@ -26,77 +26,77 @@ function filtrarPorRango(peliculas, desde, hasta) {
 const RUTA_JSON = "./estrenosCinePorOrigen.json";
 
 //Iniciamos el array peliculas para ingresarle los datos del JSON
-let peliculas = [];
+let periodos = [];
 
 //Aca intentamos leer y guardar el JSON en el array peliculas
 try {
   //Leemos el Json y lo guardamos en constante datos
   const datos = fs.readFileSync(RUTA_JSON, "utf8");
   //Convertimos el contenido del archivo JSON en un array de objetos
-  peliculas = JSON.parse(datos);
+  periodos = JSON.parse(datos);
 
-  //Agregamos un campo 'id' numérico a cada película porque no lo tenian
-  peliculas = peliculas.map((p, idx) => ({
+  //Agregamos un campo 'id' numérico a cada periodo porque no lo tenian
+  periodos = periodos.map((p, idx) => ({
     id: idx + 1,
     ...p,
   }));
 
-  console.log(`Películas cargadas desde archivo JSON (${peliculas.length})`);
+  console.log(`Periodos cargados desde archivo JSON (${periodos.length})`);
 } catch (error) {
   console.error("Error al leer el archivo JSON:", error.message);
 }
 
 //CRUD
-//GET: /peliculas/ muestra todas las películas en formato JSON
+//GET: /peliculas/ muestra todos las periodos del JSON
 router.get("/", (req, res) => {
-  res.json({ mensaje: "Listando Peliculas", peliculas});
+  res.json({ mensaje: "Listando Periodos", periodos });
 
 });
 
 //POST: /peliculas/ agrega película nueva
 router.post("/", (req, res) => {
-  const nueva = { id: peliculas.length + 1, ...req.body };
-  peliculas.push(nueva);
-  res.json({ mensaje: "Película agregada", pelicula: nueva });
+  const nueva = { id: periodos.length + 1, ...req.body };
+  periodos.push(nueva);
+  res.json({ mensaje: "Periodo agregado", periodo: nueva });
 
 });
 
-//GET: /peliculas/:id busca en peliculas por ID
+//GET: /peliculas/:id busca en periodos por ID
 router.get("/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = peliculas.findIndex((p) => p.id === id);
+  const index = periodos.findIndex((p) => p.id === id);
   
   if (index !== -1) {
-    const pelicula = peliculas[index];
-    res.status(200).json({ mensaje: "Estrenos en este indice", pelicula });
+    const periodo = periodos[index];
+    res.json({ mensaje: `Estrenos en periodo indice ${id}`, periodo });
   } else {
     return indiceIncorrecto(res);
   }
 
 });
 
-//PUT: /peliculas/:id actualiza una película por ID
+//PUT: /peliculas/:id actualiza un periodo por ID
 router.put("/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = peliculas.findIndex(p => p.id === id);
+  const index = periodos.findIndex((p) => p.id === id);
 
   if (index !== -1) {
-    peliculas[index] = { id, ...req.body }; // Reemplazamos los datos
-    res.json({ mensaje: "Película actualizada", pelicula: peliculas[index] });
+    periodos[index] = { id, ...req.body }; // Reemplazamos los datos
+    res.json({ mensaje: "Periodo actualizado", periodo: periodos[index] });
   } else {
     return indiceIncorrecto(res);
   }
 
 });
 
-// DELETE: /peliculas/:id elimina una película por ID
+//DELETE: /peliculas/:id elimina un periodo por ID
 router.delete("/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = peliculas.findIndex(p => p.id === id);
+  const index = periodos.findIndex((p) => p.id === id);
 
   if (index !== -1) {
-    peliculas.splice(index, 1);
-    res.json({ mensaje: "Película eliminada" });
+    periodos.splice(index, 1);
+    res.json({ mensaje: "Periodo eliminado" });
   } else {
     return indiceIncorrecto(res);
   }
@@ -108,40 +108,54 @@ router.delete("/:id", (req, res) => {
 //GET: /peliculas/anio/:anio busca por año
 router.get("/anio/:anio", (req, res) => {
   const anio = req.params.anio;
-  const filtrado = peliculas.filter((p) => p.indice_tiempo.startsWith(anio));
+  const filtrado = periodos.filter((p) => p.indice_tiempo.startsWith(anio));
 
   if (filtrado.length > 0) {
-    res.json({ mensaje: `Películas del año ${anio}`, peliculas: filtrado });
+    res.json({ mensaje: `Películas del año ${anio}`, periodo: filtrado });
   } else {
-    return res.json({error: `Año ingresado incorrecto, la DB tiene anios desde 2001 a 2023` });
+    return res.json({error: `Año ingresado incorrecto.` });
   }
 
 });
 
 //GET: /peliculas/anios/:desde/:hasta busca por rango de años
 router.get("/anios/:desde/:hasta", (req, res) => {
-  const desde = parseInt(req.params.desde);
-  const hasta = parseInt(req.params.hasta);
+  let desde = parseInt(req.params.desde);
+  let hasta = parseInt(req.params.hasta);
 
-  const filtrado = filtrarPorRango(peliculas, desde, hasta);
+  //Esto es por si el usuario ingreso un año mas grande primero, los invierte
+  if(desde>hasta){
+    let aux = desde;
+    desde = hasta;
+    hasta = aux;
+  }
+
+  const filtrado = filtrarPorRango(periodos, desde, hasta);
 
   if (filtrado.length > 0) {
-    res.json({mensaje: `Películas entre ${desde} y ${hasta}` , peliculas: filtrado,});
+    res.json({mensaje: `Películas entre ${desde} y ${hasta}` , periodo: filtrado,});
   } else {
-    res.json({error: `Año ingresado incorrecto, la DB tiene años desde 2001 a 2023` });
+    res.json({error: `Año ingresado incorrecto.` });
   }
 
 });
 
-//GET: /peliculas/aniosTotal/:desde/:hasta busca por rango de años y mustra el total de peliculas extranjeras/locales
+//GET: /peliculas/aniosTotal/:desde/:hasta 
+//Busca por rango de años y mustra el total de peliculas extranjeras/locales
 router.get("/aniosTotal/:desde/:hasta", (req, res) => {
   const desde = parseInt(req.params.desde);
   const hasta = parseInt(req.params.hasta);
 
-  const filtrado = filtrarPorRango(peliculas, desde, hasta);
+  if (desde > hasta) {
+    let aux = desde;
+    desde = hasta;
+    hasta = aux;
+  }
+
+  const filtrado = filtrarPorRango(periodos, desde, hasta);
 
   if (filtrado.length === 0) {
-    return res.json({ error: `Año ingresado incorrecto, la DB tiene años desde 2001 a 2023` });
+    return res.json({ error: `Año ingresado incorrecto.` });
   }
 
   // Inicializar contadores
@@ -150,32 +164,32 @@ router.get("/aniosTotal/:desde/:hasta", (req, res) => {
 
   // Acumular sumas
   filtrado.forEach((p) => {
-  //Usamos el || 0 por si el parseInt devuelve NaN
+    //Usamos el || 0 por si el parseInt devuelve NaN
     totalNacionales += parseInt(p.estrenos_film_nacional) || 0;
     totalExtranjeros += parseInt(p.estrenos_film_extranjero) || 0;
   });
 
   res.json({
     mensaje: `Total entre ${desde} y ${hasta}`,
-    total_estrenos_nacionales: `Nacionales: ${totalNacionales}`,
-    total_estrenos_extranjeros: `Extranjeras: ${totalExtranjeros}`,
+    total_estrenos_nacionales: `${totalNacionales}`,
+    total_estrenos_extranjeros: `${totalExtranjeros}`,
   });
-
 });
 
-//GET: /peliculas/comparaAnios/:anio1/:anio2 compara la cantidad total de peliculas en un 2 años y responde que año tuvo mas estrenos
+//GET: /peliculas/comparaAnios/:anio1/:anio2 
+//Compara la cantidad total de peliculas en un 2 años y responde que año tuvo mas estrenos
 router.get("/comparaAnios/:anio1/:anio2", (req, res) => {
   const anio1 = req.params.anio1;
   const anio2 = req.params.anio2;
 
-  const busqueda1 = peliculas.filter((p) => p.indice_tiempo.startsWith(anio1));
+  const busqueda1 = periodos.filter((p) => p.indice_tiempo.startsWith(anio1));
   if (busqueda1.length === 0) {
-    return res.json({error: `Año ${anio1} incorrecto. La DB tiene años desde 2001 a 2023.` });
+    return res.json({error: `Año ${anio1} incorrecto.` });
   }
 
-  const busqueda2 = peliculas.filter((p) => p.indice_tiempo.startsWith(anio2));
+  const busqueda2 = periodos.filter((p) => p.indice_tiempo.startsWith(anio2));
   if (busqueda2.length === 0) {
-    return res.json({error: `Año ${anio2} incorrecto. La DB tiene años desde 2001 a 2023.` });
+    return res.json({error: `Año ${anio2} incorrecto.` });
   }
 
   let totalPeliculas1 = 0;
