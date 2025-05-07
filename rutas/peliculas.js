@@ -4,18 +4,10 @@ const router = express.Router();
 //fs es un módulo para manejar archivos y lo vamos a necesitar para leer el JSON
 const fs = require("fs");
 
-//URL de la DB usada: 
-//https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_40ce52b7-2240-4c58-b662-803b97df0bc0
-//Definimos origen del JSON en un constante para su uso posterior
-const RUTA_JSON = "./estrenosCinePorOrigen.json";
-
-//Iniciamos el array peliculas para ingresarle los datos del JSON
-let peliculas = [];
-
 //Funciones modulares
 //Funcion de mensaje Pelicula no encontrada
-function peliculaNoEncontrada(res) {
-  return res.json({ error: "Película no encontrada" });
+function indiceIncorrecto(res) {
+  return res.json({ error: "Indice ingresado incorrecto." });
 }
 
 //Funciones de filtro por rango de anios
@@ -25,6 +17,16 @@ function filtrarPorRango(peliculas, desde, hasta) {
     return anio >= desde && anio <= hasta;
   });
 }
+
+//-----------------------------------------------------
+
+//URL de la DB usada: 
+//https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_40ce52b7-2240-4c58-b662-803b97df0bc0
+//Definimos origen del JSON en un constante para su uso posterior
+const RUTA_JSON = "./estrenosCinePorOrigen.json";
+
+//Iniciamos el array peliculas para ingresarle los datos del JSON
+let peliculas = [];
 
 //Aca intentamos leer y guardar el JSON en el array peliculas
 try {
@@ -48,6 +50,7 @@ try {
 //GET: /peliculas/ muestra todas las películas en formato JSON
 router.get("/", (req, res) => {
   res.json({ mensaje: "Listando Peliculas", peliculas});
+
 });
 
 //POST: /peliculas/ agrega película nueva
@@ -55,6 +58,7 @@ router.post("/", (req, res) => {
   const nueva = { id: peliculas.length + 1, ...req.body };
   peliculas.push(nueva);
   res.json({ mensaje: "Película agregada", pelicula: nueva });
+
 });
 
 //GET: /peliculas/:id busca en peliculas por ID
@@ -64,9 +68,9 @@ router.get("/:id", (req, res) => {
   
   if (index !== -1) {
     const pelicula = peliculas[index];
-    res.status(200).json({ mensaje: "Película encontrada", pelicula });
+    res.status(200).json({ mensaje: "Estrenos en este indice", pelicula });
   } else {
-    return peliculaNoEncontrada(res);
+    return indiceIncorrecto(res);
   }
 
 });
@@ -80,8 +84,9 @@ router.put("/:id", (req, res) => {
     peliculas[index] = { id, ...req.body }; // Reemplazamos los datos
     res.json({ mensaje: "Película actualizada", pelicula: peliculas[index] });
   } else {
-    return peliculaNoEncontrada(res);
+    return indiceIncorrecto(res);
   }
+
 });
 
 // DELETE: /peliculas/:id elimina una película por ID
@@ -93,13 +98,14 @@ router.delete("/:id", (req, res) => {
     peliculas.splice(index, 1);
     res.json({ mensaje: "Película eliminada" });
   } else {
-    return peliculaNoEncontrada(res);
+    return indiceIncorrecto(res);
   }
+
 });
 
 //Filtros con logica particular
 
-///GET: /peliculas/anio/:anio busca por año
+//GET: /peliculas/anio/:anio busca por año
 router.get("/anio/:anio", (req, res) => {
   const anio = req.params.anio;
   const filtrado = peliculas.filter((p) => p.indice_tiempo.startsWith(anio));
@@ -107,51 +113,97 @@ router.get("/anio/:anio", (req, res) => {
   if (filtrado.length > 0) {
     res.json({ mensaje: `Películas del año ${anio}`, peliculas: filtrado });
   } else {
-    return res.json({ error: `No se encontraron películas del año ${anio}` });
+    return res.json({error: `Año ingresado incorrecto, la DB tiene anios desde 2001 a 2023` });
   }
+
 });
 
-///GET: /peliculas/anios/:desde/:hasta busca por rango de años
+//GET: /peliculas/anios/:desde/:hasta busca por rango de años
 router.get("/anios/:desde/:hasta", (req, res) => {
   const desde = parseInt(req.params.desde);
   const hasta = parseInt(req.params.hasta);
 
-const filtrado = filtrarPorRango(peliculas, desde, hasta);
+  const filtrado = filtrarPorRango(peliculas, desde, hasta);
 
-if (filtrado.length > 0) {
-  res.json({mensaje: `Películas entre ${desde} y ${hasta}` , peliculas: filtrado,});
-} else {
-  res.json({ error: `No se encontraron películas entre ${desde} y ${hasta}` });
-}
+  if (filtrado.length > 0) {
+    res.json({mensaje: `Películas entre ${desde} y ${hasta}` , peliculas: filtrado,});
+  } else {
+    res.json({error: `Año ingresado incorrecto, la DB tiene años desde 2001 a 2023` });
+  }
+
 });
 
-///GET: /peliculas/aniosTotal/:desde/:hasta busca por rango de años y mustra el total de peliculas extranjeras/locales
+//GET: /peliculas/aniosTotal/:desde/:hasta busca por rango de años y mustra el total de peliculas extranjeras/locales
 router.get("/aniosTotal/:desde/:hasta", (req, res) => {
   const desde = parseInt(req.params.desde);
   const hasta = parseInt(req.params.hasta);
 
-const filtrado = filtrarPorRango(peliculas, desde, hasta);
+  const filtrado = filtrarPorRango(peliculas, desde, hasta);
 
-if (filtrado.length === 0) {return res.json({ error: `No se encontraron películas entre ${desde} y ${hasta}` });
-}
+  if (filtrado.length === 0) {
+    return res.json({ error: `Año ingresado incorrecto, la DB tiene años desde 2001 a 2023` });
+  }
 
-// Inicializar contadores
-let totalNacionales = 0;
-let totalExtranjeros = 0;
+  // Inicializar contadores
+  let totalNacionales = 0;
+  let totalExtranjeros = 0;
 
-// Acumular sumas
-filtrado.forEach((p) => {
+  // Acumular sumas
+  filtrado.forEach((p) => {
   //Usamos el || 0 por si el parseInt devuelve NaN
-  totalNacionales += parseInt(p.estrenos_film_nacional) || 0;
-  totalExtranjeros += parseInt(p.estrenos_film_extranjero) || 0;
+    totalNacionales += parseInt(p.estrenos_film_nacional) || 0;
+    totalExtranjeros += parseInt(p.estrenos_film_extranjero) || 0;
+  });
+
+  res.json({
+    mensaje: `Total entre ${desde} y ${hasta}`,
+    total_estrenos_nacionales: `Nacionales: ${totalNacionales}`,
+    total_estrenos_extranjeros: `Extranjeras: ${totalExtranjeros}`,
+  });
+
 });
 
-res.status(200).json({
-  mensaje: `Total entre ${desde} y ${hasta}`,
-  total_estrenos_nacionales: `Nacionales: ${totalNacionales}`,
-  total_estrenos_extranjeros: `Extranjeras: ${totalExtranjeros}`,
-});
+//GET: /peliculas/comparaAnios/:anio1/:anio2 compara la cantidad total de peliculas en un 2 años y responde que año tuvo mas estrenos
+router.get("/comparaAnios/:anio1/:anio2", (req, res) => {
+  const anio1 = req.params.anio1;
+  const anio2 = req.params.anio2;
 
+  const busqueda1 = peliculas.filter((p) => p.indice_tiempo.startsWith(anio1));
+  if (busqueda1.length === 0) {
+    return res.json({error: `Año ${anio1} incorrecto. La DB tiene años desde 2001 a 2023.` });
+  }
+
+  const busqueda2 = peliculas.filter((p) => p.indice_tiempo.startsWith(anio2));
+  if (busqueda2.length === 0) {
+    return res.json({error: `Año ${anio2} incorrecto. La DB tiene años desde 2001 a 2023.` });
+  }
+
+  let totalPeliculas1 = 0;
+  let totalPeliculas2 = 0;
+
+  busqueda1.forEach((p) => {
+    totalPeliculas1 += parseInt(p.estrenos_film_nacional) || 0;
+    totalPeliculas1 += parseInt(p.estrenos_film_extranjero) || 0;
+  });
+
+  busqueda2.forEach((p) => {
+    totalPeliculas2 += parseInt(p.estrenos_film_nacional) || 0;
+    totalPeliculas2 += parseInt(p.estrenos_film_extranjero) || 0;
+  });
+
+  if (totalPeliculas1 > totalPeliculas2) {
+    res.json({
+      mensaje: `En el año ${anio1} hubo mas peliculas que en el ${anio2}`,
+      anio1: `Total de estrenos en ${anio1}: ${totalPeliculas1}`,
+      anio2: `Total de estrenos en ${anio2}: ${totalPeliculas2}`,
+    });
+  } else {
+    res.json({
+      mensaje: `En el año ${anio2} hubo mas peliculas que en el ${anio1}`,
+      anio1: `Total de estrenos en ${anio1}: ${totalPeliculas1}`,
+      anio2: `Total de estrenos en ${anio2}: ${totalPeliculas2}`,
+    });
+  }
 });
 
 /*Aca un ejemplo del formato original del Json, nosotros agregamos el campo ID al principio
@@ -161,6 +213,5 @@ res.status(200).json({
     "estrenos_film_extranjero": 309
   },
 */
-
 
 module.exports = router;
