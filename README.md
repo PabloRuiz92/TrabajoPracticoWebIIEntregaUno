@@ -12,8 +12,7 @@ Se utilizó un dataset derivado del portal público del Gobierno argentino:
 
 Titulo: Recaudación de cine a nivel nacional por origen de film
 
-URL: https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_40ce52b7-2240-
-4c58-b662-803b97df0bc0
+URL: https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_40ce52b7-2240-4c58-b662-803b97df0bc0
 
 Formato: JSON
 
