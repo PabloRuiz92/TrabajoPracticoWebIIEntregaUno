@@ -12,8 +12,18 @@ const RUTA_JSON = "./estrenosCinePorOrigen.json";
 //Iniciamos el array peliculas para ingresarle los datos del JSON
 let peliculas = [];
 
+//Funciones modulares
+//Funcion de mensaje Pelicula no encontrada
 function peliculaNoEncontrada(res) {
   return res.json({ error: "Película no encontrada" });
+}
+
+//Funciones de filtro por rango de anios
+function filtrarPorRango(peliculas, desde, hasta) {
+  return peliculas.filter((p) => {
+    const anio = parseInt(p.indice_tiempo.slice(0, 4));
+    return anio >= desde && anio <= hasta;
+  });
 }
 
 //Aca intentamos leer y guardar el JSON en el array peliculas
@@ -106,10 +116,7 @@ router.get("/anios/:desde/:hasta", (req, res) => {
   const desde = parseInt(req.params.desde);
   const hasta = parseInt(req.params.hasta);
 
-const filtrado = peliculas.filter((p) => {
-  const anio = parseInt(p.indice_tiempo.slice(0, 4));
-  return anio >= desde && anio <= hasta;
-});
+const filtrado = filtrarPorRango(peliculas, desde, hasta);
 
 if (filtrado.length > 0) {
   res.json({mensaje: `Películas entre ${desde} y ${hasta}` , peliculas: filtrado,});
@@ -123,10 +130,7 @@ router.get("/aniosTotal/:desde/:hasta", (req, res) => {
   const desde = parseInt(req.params.desde);
   const hasta = parseInt(req.params.hasta);
 
-const filtrado = peliculas.filter((p) => {
-  const anio = parseInt(p.indice_tiempo.slice(0, 4));
-  return anio >= desde && anio <= hasta;
-});
+const filtrado = filtrarPorRango(peliculas, desde, hasta);
 
 if (filtrado.length === 0) {return res.json({ error: `No se encontraron películas entre ${desde} y ${hasta}` });
 }
