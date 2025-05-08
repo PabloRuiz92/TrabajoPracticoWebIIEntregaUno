@@ -47,13 +47,15 @@ try {
 }
 
 //CRUD
-//GET: /peliculas/ muestra todos las periodos del JSON
+//GET /peliculas/ 
+//Muestra todos las periodos del JSON
 router.get("/", (req, res) => {
   res.json({ mensaje: "Listando Periodos", periodos });
 
 });
 
-//POST: /peliculas/ agrega película nueva
+//POST /peliculas/ 
+//Agrega perdiodo nuevo
 router.post("/", (req, res) => {
   const nueva = { id: periodos.length + 1, ...req.body };
   periodos.push(nueva);
@@ -61,22 +63,23 @@ router.post("/", (req, res) => {
 
 });
 
-//GET: /peliculas/:id busca en periodos por ID
-router.get("/:id", (req, res) => {
+//GET /peliculas/:id 
+//Busca en periodos por ID
+router.get("/id/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = periodos.findIndex((p) => p.id === id);
-  
+
   if (index !== -1) {
     const periodo = periodos[index];
     res.json({ mensaje: `Estrenos en periodo indice ${id}`, periodo });
   } else {
     return indiceIncorrecto(res);
   }
-
 });
 
-//PUT: /peliculas/:id actualiza un periodo por ID
-router.put("/:id", (req, res) => {
+//PUT /peliculas/:id 
+//Actualiza un periodo por ID
+router.put("/id/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = periodos.findIndex((p) => p.id === id);
 
@@ -86,11 +89,11 @@ router.put("/:id", (req, res) => {
   } else {
     return indiceIncorrecto(res);
   }
-
 });
 
-//DELETE: /peliculas/:id elimina un periodo por ID
-router.delete("/:id", (req, res) => {
+//DELETE /peliculas/:id 
+//Elimina un periodo por ID
+router.delete("/id/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = periodos.findIndex((p) => p.id === id);
 
@@ -105,7 +108,8 @@ router.delete("/:id", (req, res) => {
 
 //Filtros con logica particular
 
-//GET: /peliculas/anio/:anio busca por año
+//GET /peliculas/anio/:anio 
+//Busca periodo por año
 router.get("/anio/:anio", (req, res) => {
   const anio = req.params.anio;
   const filtrado = periodos.filter((p) => p.indice_tiempo.startsWith(anio));
@@ -118,13 +122,14 @@ router.get("/anio/:anio", (req, res) => {
 
 });
 
-//GET: /peliculas/anios/:desde/:hasta busca por rango de años
+//GET /peliculas/anios/:desde/:hasta
+//Muestra los periodos entre 2 años.
 router.get("/anios/:desde/:hasta", (req, res) => {
   let desde = parseInt(req.params.desde);
   let hasta = parseInt(req.params.hasta);
 
   //Esto es por si el usuario ingreso un año mas grande primero, los invierte
-  if(desde>hasta){
+  if(desde > hasta){
     let aux = desde;
     desde = hasta;
     hasta = aux;
@@ -140,7 +145,7 @@ router.get("/anios/:desde/:hasta", (req, res) => {
 
 });
 
-//GET: /peliculas/aniosTotal/:desde/:hasta 
+//GET /peliculas/aniosTotal/:desde/:hasta 
 //Busca por rango de años y mustra el total de peliculas extranjeras/locales
 router.get("/aniosTotal/:desde/:hasta", (req, res) => {
   const desde = parseInt(req.params.desde);
@@ -158,11 +163,11 @@ router.get("/aniosTotal/:desde/:hasta", (req, res) => {
     return res.json({ error: `Año ingresado incorrecto.` });
   }
 
-  // Inicializar contadores
+  //Inicializar contadores
   let totalNacionales = 0;
   let totalExtranjeros = 0;
 
-  // Acumular sumas
+  //Acumular sumas
   filtrado.forEach((p) => {
     //Usamos el || 0 por si el parseInt devuelve NaN
     totalNacionales += parseInt(p.estrenos_film_nacional) || 0;
@@ -176,20 +181,18 @@ router.get("/aniosTotal/:desde/:hasta", (req, res) => {
   });
 });
 
-//GET: /peliculas/comparaAnios/:anio1/:anio2 
-//Compara la cantidad total de peliculas en un 2 años y responde que año tuvo mas estrenos
+//GET /peliculas/comparaAnios/:anio1/:anio2 
+//Compara la cantidad total de peliculas en 2 años diferentes y responde que año tuvo mas estrenos
+/*
 router.get("/comparaAnios/:anio1/:anio2", (req, res) => {
   const anio1 = req.params.anio1;
   const anio2 = req.params.anio2;
 
   const busqueda1 = periodos.filter((p) => p.indice_tiempo.startsWith(anio1));
-  if (busqueda1.length === 0) {
-    return res.json({error: `Año ${anio1} incorrecto.` });
-  }
-
   const busqueda2 = periodos.filter((p) => p.indice_tiempo.startsWith(anio2));
-  if (busqueda2.length === 0) {
-    return res.json({error: `Año ${anio2} incorrecto.` });
+
+  if (busqueda1.length === 0 || busqueda2.length === 0) {
+    return res.json({ error: `Año ingresado inválido.` });
   }
 
   let totalPeliculas1 = 0;
@@ -207,25 +210,74 @@ router.get("/comparaAnios/:anio1/:anio2", (req, res) => {
 
   if (totalPeliculas1 > totalPeliculas2) {
     res.json({
-      mensaje: `En el año ${anio1} hubo mas peliculas que en el ${anio2}`,
-      anio1: `Total de estrenos en ${anio1}: ${totalPeliculas1}`,
-      anio2: `Total de estrenos en ${anio2}: ${totalPeliculas2}`,
+      mensaje: `En el año ${anio1} hubo más estrenos que en ${anio2}`,
+      anio1: `Total: ${totalPeliculas1}`,
+      anio2: `Total: ${totalPeliculas2}`,
+    });
+  } else if (totalPeliculas1 < totalPeliculas2) {
+    res.json({
+      mensaje: `En el año ${anio2} hubo más estrenos que en ${anio1}`,
+      anio1: `Total: ${totalPeliculas1}`,
+      anio2: `Total: ${totalPeliculas2}`,
     });
   } else {
     res.json({
-      mensaje: `En el año ${anio2} hubo mas peliculas que en el ${anio1}`,
-      anio1: `Total de estrenos en ${anio1}: ${totalPeliculas1}`,
-      anio2: `Total de estrenos en ${anio2}: ${totalPeliculas2}`,
+      mensaje: `Ambos años tuvieron la misma cantidad de estrenos`,
+      anio1: `Total: ${totalPeliculas1}`,
+      anio2: `Total: ${totalPeliculas2}`,
+    });
+  }
+});*/
+
+//GET /peliculas/comparaAnios?anio1=value&anio2=value
+//Compara la cantidad total de peliculas en 2 años diferentes y responde que año tuvo mas estrenos
+router.get("/comparaAnios", (req, res) => {
+  const anio1 = req.query.anio1;
+  const anio2 = req.query.anio2;
+
+  if (!anio1 || !anio2) {
+    return res.json({ error: "Debes especificar anio1 y anio2 como parámetros de consulta" });
+  }
+
+  const busqueda1 = periodos.filter(p => p.indice_tiempo.startsWith(anio1));
+  const busqueda2 = periodos.filter(p => p.indice_tiempo.startsWith(anio2));
+
+  if (busqueda1.length === 0 || busqueda2.length === 0) {
+    return res.json({ error: `Año ingresado inválido.` });
+  }
+
+  let totalPeliculas1 = 0;
+  let totalPeliculas2 = 0;
+
+  busqueda1.forEach(p => {
+    totalPeliculas1 += parseInt(p.estrenos_film_nacional) || 0;
+    totalPeliculas1 += parseInt(p.estrenos_film_extranjero) || 0;
+  });
+
+  busqueda2.forEach(p => {
+    totalPeliculas2 += parseInt(p.estrenos_film_nacional) || 0;
+    totalPeliculas2 += parseInt(p.estrenos_film_extranjero) || 0;
+  });
+
+  if (totalPeliculas1 > totalPeliculas2) {
+    res.json({
+      mensaje: `En el año ${anio1} hubo más estrenos que en ${anio2}`,
+      anio1: `Total: ${totalPeliculas1}`,
+      anio2: `Total: ${totalPeliculas2}`,
+    });
+  } else if (totalPeliculas1 < totalPeliculas2) {
+    res.json({
+      mensaje: `En el año ${anio2} hubo más estrenos que en ${anio1}`,
+      anio1: `Total: ${totalPeliculas1}`,
+      anio2: `Total: ${totalPeliculas2}`,
+    });
+  } else {
+    res.json({
+      mensaje: `Ambos años tuvieron la misma cantidad de estrenos`,
+      anio1: `Total: ${totalPeliculas1}`,
+      anio2: `Total: ${totalPeliculas2}`,
     });
   }
 });
-
-/*Aca un ejemplo del formato original del Json, nosotros agregamos el campo ID al principio
-  {
-    "indice_tiempo": "2018-01-01",
-    "estrenos_film_nacional": 239,
-    "estrenos_film_extranjero": 309
-  },
-*/
 
 module.exports = router;
