@@ -28,4 +28,6 @@ Se desarrollaron los siguientes endpoints básicos de la API REST:
 • DELETE /peliculas/:id – Eliminar una película por ID
 
 Además, se implementaron los siguientes filtros con lógica interna:
-• GET /peliculas/filtrar/anio/:anio – Filtrar películas por año
+•	GET /peliculas/filtrar/anio/:anio (Busca periodos por año)
+•	GET /peliculas/anios/:desde/:hasta (Busca los periodos en el rango de 2 años)
+
