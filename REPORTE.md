@@ -22,12 +22,18 @@ con Node.js y Express.
 
 ## Endpoints desarrollados:
 Se desarrollaron los siguientes endpoints básicos de la API REST:
+
 • GET /peliculas – Obtener todas las periodos
+
 • POST /peliculas – Agregar un periodos nuevo
+
 • PUT /peliculas/id/:id – Modificar una periodo existente
+
 • DELETE /peliculas/id/:id – Eliminar una periodo por ID
 
+
 Además, se implementaron las siguientes operaciones con lógica interna:
+
 •	GET /peliculas/anio/:anio –  Busca periodo por año
 
 •	GET /peliculas/anios/:desde/:hasta – Muestra los periodos entre 2 años
