@@ -20,7 +20,7 @@ Se eligió esta fuente por la facilidad que ofrece para la carga de datos y su d
 portal público del gobierno argentino, siendo esta nuestra primera experiencia en el desarrollo
 con Node.js y Express.
 
-## Endpoints:
+## Endpoints desarrollados:
 Se desarrollaron los siguientes endpoints básicos de la API REST:
 • GET /peliculas – Obtener todas las películas
 • POST /peliculas – Agregar una película nueva
