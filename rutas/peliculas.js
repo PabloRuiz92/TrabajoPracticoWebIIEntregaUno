@@ -21,7 +21,7 @@ function filtrarPorRango(periodos, desde, hasta) {
 //-----------------------------------------------------
 
 //URL de la DB usada: 
-//https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_40ce52b7-2240-4c58-b662-803b97df0bc0
+//https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_26914562-e043-4690-8251-fc94dd5ad3cd
 //Definimos origen del JSON en un constante para su uso posterior
 const RUTA_JSON = "./estrenosCinePorOrigen.json";
 
@@ -63,7 +63,7 @@ router.post("/", (req, res) => {
 
 });
 
-//GET /peliculas/:id 
+//GET /peliculas/id/:id 
 //Busca en periodos por ID
 router.get("/id/:id", (req, res) => {
   const id = parseInt(req.params.id);
@@ -77,7 +77,7 @@ router.get("/id/:id", (req, res) => {
   }
 });
 
-//PUT /peliculas/:id 
+//PUT /peliculas/id/:id 
 //Actualiza un periodo por ID
 router.put("/id/:id", (req, res) => {
   const id = parseInt(req.params.id);
@@ -91,7 +91,7 @@ router.put("/id/:id", (req, res) => {
   }
 });
 
-//DELETE /peliculas/:id 
+//DELETE /peliculas/id/:id 
 //Elimina un periodo por ID
 router.delete("/id/:id", (req, res) => {
   const id = parseInt(req.params.id);
@@ -106,7 +106,7 @@ router.delete("/id/:id", (req, res) => {
 
 });
 
-//Filtros con logica particular
+//Operaciones con logica interna
 
 //GET /peliculas/anio/:anio 
 //Busca periodo por año
