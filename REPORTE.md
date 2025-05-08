@@ -23,13 +23,13 @@ con Node.js y Express.
 ## Endpoints desarrollados:
 Se desarrollaron los siguientes endpoints básicos de la API REST:
 
-• GET /peliculas – Obtener todas las periodos
+• GET /peliculas – Obtener todos las periodos
 
-• POST /peliculas – Agregar un periodos nuevo
+• POST /peliculas – Agregar un periodo nuevo
 
-• PUT /peliculas/id/:id – Modificar una periodo existente
+• PUT /peliculas/id/:id – Modificar un periodo existente
 
-• DELETE /peliculas/id/:id – Eliminar una periodo por ID
+• DELETE /peliculas/id/:id – Eliminar un periodo por ID
 
 
 Además, se implementaron las siguientes operaciones con lógica interna:
