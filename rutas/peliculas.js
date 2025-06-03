@@ -5,18 +5,18 @@ const router = express.Router();
 const fs = require("fs");
 
 //Funciones modulares
-//Funcion de mensaje Pelicula no encontrada
-function indiceIncorrecto(res) {
-  return res.json({ error: "Indice ingresado incorrecto." });
-}
+//Funcion de mensaje Periodo no encontrado
+  function indiceIncorrecto(res) {
+    return res.json({ error: "Indice ingresado incorrecto." });
+  }
 
-//Funciones de filtro por rango de anios
-function filtrarPorRango(periodos, desde, hasta) {
-  return periodos.filter((p) => {
-    const anio = parseInt(p.indice_tiempo.slice(0, 4));
-    return anio >= desde && anio <= hasta;
-  });
-}
+  //Funciones de filtro por rango de anios
+  function filtrarPorRango(periodos, desde, hasta) {
+    return periodos.filter((p) => {
+      const anio = parseInt(p.indice_tiempo.slice(0, 4));
+      return anio >= desde && anio <= hasta;
+    });
+  }
 
 //-----------------------------------------------------
 
@@ -25,7 +25,7 @@ function filtrarPorRango(periodos, desde, hasta) {
 //Definimos origen del JSON en un constante para su uso posterior
 const RUTA_JSON = "./estrenosCinePorOrigen.json";
 
-//Iniciamos el array peliculas para ingresarle los datos del JSON
+//Iniciamos el array periodos para ingresarle los datos del JSON
 let periodos = [];
 
 //Aca intentamos leer y guardar el JSON en el array peliculas
