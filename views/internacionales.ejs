@@ -8,12 +8,14 @@
       <thead>
         <tr>
           <th>Título</th>
+          <th>Año</th>
         </tr>
       </thead>
       <tbody>
         <% peliculas.forEach(pelicula => { %>
           <tr>
             <td><%= pelicula.titulo %></td>
+            <td><%= pelicula.anio %></td>
           </tr>
         <% }); %>
       </tbody>
