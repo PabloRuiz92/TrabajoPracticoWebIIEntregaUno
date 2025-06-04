@@ -5,6 +5,9 @@ const peliculasRouter = require("./rutas/peliculas");
 const path = require("path");
 const ejs = require("ejs");
 
+// Middleware para permitir la form
+app.use(express.urlencoded({ extended: true }));
+
 // Middleware para permitir recibir JSON en el body de las solicitudes
 app.use(express.json());
 

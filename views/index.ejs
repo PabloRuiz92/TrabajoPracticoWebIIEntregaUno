@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Películas</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
@@ -12,7 +13,7 @@
         <tr>
           <th>Título</th>
           <th>Año</th>
-          <th>Tipo</th>
+          <th>Origen</th>
         </tr>
       </thead>
       <tbody>
@@ -20,7 +21,7 @@
           <tr>
             <td><%= pelicula.titulo %></td>
             <td><%= pelicula.anio %></td>
-            <td><%= pelicula.tipo %></td>
+            <td><%= pelicula.origen %></td>
           </tr>
         <% }); %>
       </tbody>
