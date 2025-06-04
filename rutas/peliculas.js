@@ -7,7 +7,7 @@ const { SQLITE_URL } = require("../config");
 const database = new Database(SQLITE_URL);
 
 // GET /peliculas/ - Obtiene todas las películas de la base de datos con el año de estreno
-router.get("/", async (req, res) => {
+router.get("/listado", async (req, res) => {
   try {
     const peliculas =
       await database.sql
@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
         FROM peliculas_extranjeras pe
         JOIN estrenos_anios e ON pe.estreno_id = e.id;`;
 
-    res.render("index", { peliculas });
+    res.render("listado", { peliculas });
   } catch (error) {
     console.error("Error al obtener películas:", error.message);
     res.status(500).json({ error: "Error al obtener películas desde la base de datos" });
@@ -39,11 +39,11 @@ router.get("/nacionales", async (req, res) => {
   }
 });
 
-// GET /peliculas/extrangeras - Obtiene todas las películas extrangeras de la base de datos
-router.get("/extrangeras", async (req, res) => {
+// GET /peliculas/extrangeras - Obtiene todas las películas internacionales de la base de datos
+router.get("/internacionales", async (req, res) => {
   try {
     const peliculas = await database.sql`SELECT * FROM peliculas_extranjeras;`;
-    res.render("extrangeras", { peliculas });
+    res.render("internacionales", { peliculas });
   } catch (error) {
     console.error("Error al obtener listado:", error.message);
     res.status(500).json({ error: "Error al obtener películas desde la base de datos" });

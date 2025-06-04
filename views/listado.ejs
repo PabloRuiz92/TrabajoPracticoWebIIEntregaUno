@@ -1,22 +1,26 @@
     <!------------------------------------- HEADER ---------------------------------------->
-    <%- include('./header'); %>
+    <%- include('./header'); %>     
     <!------------------------------------- NAVBAR ---------------------------------------->
-    <%- include('./navbar'); %>
-    <!------------------------------------- BODY ------------------------------------------>  
-    <h1>Películas Nacionales</h1>
+    <%- include('./navbar'); %>          
+    <!------------------------------------- BODY ------------------------------------------>
+    <h1 style="text-align: center;">Películas</h1>
     <table>
       <thead>
         <tr>
           <th>Título</th>
+          <th>Año</th>
+          <th>Origen</th>
         </tr>
       </thead>
       <tbody>
         <% peliculas.forEach(pelicula => { %>
           <tr>
             <td><%= pelicula.titulo %></td>
+            <td><%= pelicula.anio %></td>
+            <td><%= pelicula.origen %></td>
           </tr>
         <% }); %>
       </tbody>
-    </table>  
+    </table>
     <!------------------------------------- FOOTER ------------------------------------------>
     <%- include('./footer'); %>

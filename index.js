@@ -21,9 +21,9 @@ app.use("/peliculas", peliculasRouter);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Rutas
+// Ruta
 app.get("/", (req, res) => {
-  res.send("Bienvenido a la API de Películas");
+  res.render("index");
 });
 
 const PORT = 7050;

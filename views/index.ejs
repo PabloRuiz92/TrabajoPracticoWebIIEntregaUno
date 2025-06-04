@@ -1,30 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Películas</title>
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
-  <body>
-    <h1 style="text-align: center;">Películas</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Año</th>
-          <th>Origen</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% peliculas.forEach(pelicula => { %>
-          <tr>
-            <td><%= pelicula.titulo %></td>
-            <td><%= pelicula.anio %></td>
-            <td><%= pelicula.origen %></td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  </body>
-</html>
+    <!------------------------------------- HEADER ---------------------------------------->
+    <%- include('./header'); %>     
+    <!------------------------------------- NAVBAR ---------------------------------------->
+    <%- include('./navbar'); %>      
+    <!------------------------------------- FALTA UN BODY ASI NOMAS ------------------------------------------>
+    <!------------------------------------- FOOTER ------------------------------------------>
+    <%- include('./footer'); %>
