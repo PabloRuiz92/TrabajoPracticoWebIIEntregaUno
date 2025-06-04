@@ -1,6 +1,56 @@
 const express = require("express");
 const router = express.Router();
+const { Database } = require("@sqlitecloud/drivers");
+const { SQLITE_URL } = require("../config");
 
+// Crear una instancia de la base
+const database = new Database(SQLITE_URL);
+
+// GET /peliculas/ - Obtiene todas las películas extrangeras de la base de datos
+router.get("/", async (req, res) => {
+  try {
+    const peliculas =
+      await database.sql
+        `SELECT pn.titulo, e.anio, 'Nacional' AS tipo
+        FROM peliculas_nacionales pn
+        JOIN estrenos_anios e ON pn.estreno_id = e.id
+
+        UNION ALL
+
+        SELECT pe.titulo, e.anio, 'Extranjera' AS tipo
+        FROM peliculas_extranjeras pe
+        JOIN estrenos_anios e ON pe.estreno_id = e.id;`;
+    res.render("index", { peliculas });
+  } catch (error) {
+    console.error("Error al obtener películas:", error.message);
+    res.status(500).json({ error: "Error al obtener películas desde la base de datos" });
+  }
+});
+
+// GET /peliculas/nacionales - Obtiene todas las películas nacionales de la base de datos
+router.get("/nacionales", async (req, res) => {
+  try {
+    const peliculas = await database.sql`SELECT * FROM peliculas_nacionales;`;
+    res.render("nacionales", { peliculas });
+  } catch (error) {
+    console.error("Error al obtener películas:", error.message);
+    res.status(500).json({ error: "Error al obtener películas desde la base de datos" });
+  }
+});
+
+// GET /peliculas/extrangeras - Obtiene todas las películas extrangeras de la base de datos
+router.get("/extrangeras", async (req, res) => {
+  try {
+    const peliculas = await database.sql`SELECT * FROM peliculas_extranjeras;`;
+    res.render("extrangeras", { peliculas });
+  } catch (error) {
+    console.error("Error al obtener listado:", error.message);
+    res.status(500).json({ error: "Error al obtener películas desde la base de datos" });
+  }
+});
+
+module.exports = router;
+/*
 //fs es un módulo para manejar archivos y lo vamos a necesitar para leer el JSON
 const fs = require("fs");
 
@@ -228,7 +278,7 @@ router.get("/comparaAnios/:anio1/:anio2", (req, res) => {
     });
   }
 });*/
-
+/*
 //GET /peliculas/comparaAnios?anio1=value&anio2=value
 //Compara la cantidad total de peliculas en 2 años diferentes y responde que año tuvo mas estrenos
 router.get("/comparaAnios", (req, res) => {
@@ -281,3 +331,4 @@ router.get("/comparaAnios", (req, res) => {
 });
 
 module.exports = router;
+*/

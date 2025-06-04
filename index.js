@@ -1,24 +1,29 @@
 const express = require("express");
 const app = express();
+const peliculasRouter = require("./rutas/peliculas");
 
 const path = require("path");
 const ejs = require("ejs");
-const getExtrangeras = require("./db");
 
+// Middleware para permitir recibir JSON en el body de las solicitudes
 app.use(express.json());
 
-const PORT = 7050;
-/*
-const peliculasRouter = require("./rutas/peliculas");
-app.use("/peliculas", peliculasRouter);
-*/
+// Aca agregamos el css
+app.use("/css", express.static(path.join(__dirname, "css")));
 
+// Middleware para rutas de películas
+app.use("/peliculas", peliculasRouter);
+
+// Motor de vistas y ruta a la carpeta de vistas
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.get("/info", async (req, res) => {
-  res.render("index", { resultado: await getExtrangeras() });
+// Rutas
+app.get("/", (req, res) => {
+  res.send("Bienvenido a la API de Películas");
 });
+
+const PORT = 7050;
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
