@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Agregar</title>
-    </head>
-    <body>
+    <!------------------------------------- HEADER ---------------------------------------->
+    <%- include('./header'); %>     
+    <!------------------------------------- NAVBAR ---------------------------------------->
+    <%- include('./navbar'); %>   
+    <!------------------------------------- BODY ------------------------------------------>
         <h1>Agregar nueva película</h1>
 
         <form action="/peliculas/agregar" method="POST">
@@ -26,5 +23,5 @@
 
         <button type="submit">Agregar</button>
         </form>
-    </body>
-</html>
+    <!------------------------------------- FOOTER ------------------------------------------>
+    <%- include('./footer'); %>
