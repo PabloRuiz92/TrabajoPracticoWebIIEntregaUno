@@ -2,14 +2,28 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Peliculas</title>
+    <title>Películas</title>
+    <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <h1>Peliculas</h1>
-    <ul>
-        <% resultado.forEach(pelicula => { %>
-            <li><%= pelicula.titulo %></li>
+    <h1 style="text-align: center;">Películas</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Año</th>
+          <th>Tipo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% peliculas.forEach(pelicula => { %>
+          <tr>
+            <td><%= pelicula.titulo %></td>
+            <td><%= pelicula.anio %></td>
+            <td><%= pelicula.tipo %></td>
+          </tr>
         <% }); %>
-    </ul>
+      </tbody>
+    </table>
   </body>
 </html>
