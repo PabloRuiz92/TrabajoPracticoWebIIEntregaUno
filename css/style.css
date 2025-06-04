@@ -1,11 +1,25 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main.flex-grow-1 {
+    flex-grow: 1;
+}
+
 table {
     width: 60%;
     border-collapse: collapse;
     margin: 20px auto;
 }
 
-th,
-td {
+th, td {
     border: 1px solid #333;
     padding: 8px;
     text-align: left;
@@ -14,6 +28,7 @@ td {
 th {
     background-color: #f0f0f0;
 }
+
 h1 {
     text-align: center;
 }

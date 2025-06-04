@@ -31,7 +31,12 @@ router.get("/listado", async (req, res) => {
 // GET /peliculas/nacionales - Obtiene todas las películas nacionales de la base de datos
 router.get("/nacionales", async (req, res) => {
   try {
-    const peliculas = await database.sql`SELECT * FROM peliculas_nacionales;`;
+    const peliculas = 
+      await database.sql
+        `SELECT pn.titulo, e.anio, 'Nacional' AS origen
+        FROM peliculas_nacionales pn
+        JOIN estrenos_anios e ON pn.estreno_id = e.id`;
+
     res.render("nacionales", { peliculas });
   } catch (error) {
     console.error("Error al obtener películas:", error.message);
@@ -42,7 +47,12 @@ router.get("/nacionales", async (req, res) => {
 // GET /peliculas/extrangeras - Obtiene todas las películas internacionales de la base de datos
 router.get("/internacionales", async (req, res) => {
   try {
-    const peliculas = await database.sql`SELECT * FROM peliculas_extranjeras;`;
+    const peliculas = 
+      await database.sql
+        `SELECT pe.titulo, e.anio, 'Extranjera' AS origen
+        FROM peliculas_extranjeras pe
+        JOIN estrenos_anios e ON pe.estreno_id = e.id;`;
+
     res.render("internacionales", { peliculas });
   } catch (error) {
     console.error("Error al obtener listado:", error.message);
@@ -55,7 +65,7 @@ router.get("/agregar", (req, res) => {
   res.render("agregar");
 });
 
-// Aca esta el metodo que usa la form de agregar
+// Aca esta el metodo que usa la form para agreguar agregar
 router.post("/agregar", async (req, res) => {
   const { titulo, anio, origen } = req.body;
 
@@ -71,7 +81,7 @@ router.post("/agregar", async (req, res) => {
       // Aca comprobamos si ya existe o no el año ingresado
       estrenoId = estreno[0].id;
     } else {
-      // Si no existe, lo insertamos
+      // Si no existe, lo insertamos y usamos returning para recuperar el id de la query insert
       const insert = await database.sql`
         INSERT INTO estrenos_anios (anio) VALUES (${anio})
         RETURNING id
@@ -79,7 +89,7 @@ router.post("/agregar", async (req, res) => {
       estrenoId = insert[0].id;
     }
 
-    // Hacemos el insert
+    // Hacemos el insert dependiendo si es de origen nacional o extrangera
     if (origen === "nacional") {
       await database.sql`
         INSERT INTO peliculas_nacionales (titulo, estreno_id)
@@ -92,7 +102,7 @@ router.post("/agregar", async (req, res) => {
       `;
     }
 
-    res.redirect("/peliculas/");
+    res.redirect("/peliculas/listado");
   } catch (error) {
     console.error("Error al agregar película:", error);
     res.status(500).send("Error al agregar película");

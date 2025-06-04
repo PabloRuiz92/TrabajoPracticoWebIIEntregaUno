@@ -11,8 +11,9 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware para permitir recibir JSON en el body de las solicitudes
 app.use(express.json());
 
-// Aca agregamos el css
+// Aca agregamos el css y public para las imagenes
 app.use("/css", express.static(path.join(__dirname, "css")));
+app.use(express.static("public"));
 
 // Middleware para rutas de películas
 app.use("/peliculas", peliculasRouter);
