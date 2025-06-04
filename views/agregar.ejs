@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Agregar</title>
+    </head>
+    <body>
+        <h1>Agregar nueva película</h1>
+
+        <form action="/peliculas/agregar" method="POST">
+            <label>Título:</label>
+            <input type="text" name="titulo" required />
+            <br>
+
+            <label>Año de estreno:</label>
+            <input type="number" name="anio" required />
+            <br>
+
+            <label>Origen:</label>
+            <select name="origen" required>
+                <option value="nacional">Nacional</option>
+                <option value="extranjera">Extranjera</option>
+            </select>
+            <br>
+
+        <button type="submit">Agregar</button>
+        </form>
+    </body>
+</html>
