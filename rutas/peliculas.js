@@ -65,7 +65,7 @@ router.get("/agregar", (req, res) => {
   res.render("agregar");
 });
 
-// Aca esta el metodo que usa la form para agreguar agregar
+// Aca esta el metodo que usa la form para agregar pelicula
 router.post("/agregar", async (req, res) => {
   const { titulo, anio, origen } = req.body;
 
@@ -106,6 +106,44 @@ router.post("/agregar", async (req, res) => {
   } catch (error) {
     console.error("Error al agregar película:", error);
     res.status(500).send("Error al agregar película");
+  }
+});
+
+// PUT /peliculas/editar - Pagina con formulario para eliminar peliculas
+router.get("/editar", (req, res) => {
+  res.render("editar");
+});
+
+// DELETE /peliculas/eliminar - Pagina con formulario para eliminar peliculas
+router.get("/eliminar", (req, res) => {
+  res.render("eliminar");
+});
+
+// Aca esta el metodo que usa la form para agreguar agregar
+router.post("/eliminar", async (req, res) => {
+  const { titulo, origen } = req.body;
+
+  try {
+    // Hacemos el delete dependiendo si es de origen nacional o extrangera
+    if (origen === "nacional") {
+      await database.sql`
+        DELETE FROM peliculas_nacionales
+        WHERE titulo = ${titulo};
+      `;
+    } else {
+      await database.sql`
+        DELETE FROM peliculas_extranjeras
+        WHERE titulo = ${titulo};
+      `;
+    }
+
+    console.log("Película borrada")
+    res.redirect("/peliculas/listado");
+  } catch (error) {
+    //mensaje en consola para debug
+    console.error("Error al borrar película:", error);
+    //mensaje en navegador
+    res.status(500).send("Error al borrar película");
   }
 });
 

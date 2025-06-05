@@ -1,0 +1,35 @@
+    <!------------------------------------- HEADER ---------------------------------------->
+    <%- include('./header'); %>     
+    <!------------------------------------- NAVBAR ---------------------------------------->
+    <%- include('./navbar'); %>   
+    <!------------------------------------- BODY ------------------------------------------> 
+        <section class="container text-center my-3">
+            <h1>Eliminar una película</h1>
+            <form action="/peliculas/eliminar" method="POST">
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Título de la película"
+                        name="titulo"
+                        required
+                    />
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="origen" required>
+                            <option value="">Seleccionar origen</option>
+                            <option value="nacional">Nacional</option>
+                            <option value="extranjera">Extranjera</option>
+                        </select>
+                    </div>
+                </div>
+              <h6 class="text-start text-muted">Todos los campos son obligatorios</h6>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-block botonFormEliminar">Eliminar</button>
+              </div> 
+            </form>
+        </section>
+    <!------------------------------------- FOOTER ------------------------------------------>
+    <%- include('./footer'); %>
