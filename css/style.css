@@ -39,25 +39,16 @@ h1 {
     height: 100vh;
 }
 
-.subrayado {
-    text-decoration-line: underline;
-    text-decoration-style: dotted;
-}
-
 .botonForm {
     background-color: #96C93E;
     color: white;
     width: 100%;
 }
 
-#infoValorFinal {
-    background-color: #CCE5FF;
-    border-color: #B8DAFF;
-    color: #0040A5;
-}
-
-#advertencia {
-    visibility: hidden;
+.botonFormEliminar {
+    background-color: #ba3030;
+    color: white;
+    width: 100%;
 }
 
 footer {
