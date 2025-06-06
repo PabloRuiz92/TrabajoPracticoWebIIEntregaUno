@@ -1,26 +1,26 @@
-    <!------------------------------------- HEADER ---------------------------------------->
-    <%- include('./header'); %>
-    <!------------------------------------- NAVBAR ---------------------------------------->
-    <%- include('./navbar'); %>
-    <!------------------------------------- BODY ------------------------------------------>  
-    <div class="container my-3">
-      <h1>Películas Nacionales</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Año</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% peliculas.forEach(pelicula => { %>
-            <tr>
-              <td><%= pelicula.titulo %></td>
-              <td><%= pelicula.anio %></td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table> 
-    </div> 
-    <!------------------------------------- FOOTER ------------------------------------------>
-    <%- include('./footer'); %>
+<!------------------------------------- HEADER ---------------------------------------->
+<%- include('./header'); %>
+<!------------------------------------- NAVBAR ---------------------------------------->
+<%- include('./navbar'); %>
+<!------------------------------------- BODY ------------------------------------------>  
+<div class="container my-3">
+  <h1>Películas Nacionales</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Año</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% peliculas.forEach(pelicula => { %>
+        <tr>
+          <td><%= pelicula.titulo %></td>
+          <td><%= pelicula.anio %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table> 
+</div> 
+<!------------------------------------- FOOTER ------------------------------------------>
+<%- include('./footer'); %>

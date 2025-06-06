@@ -1,47 +1,73 @@
-    <!------------------------------------- HEADER ---------------------------------------->
-    <%- include('./header'); %>     
-    <!------------------------------------- NAVBAR ---------------------------------------->
-    <%- include('./navbar'); %>   
-    <!------------------------------------- BODY ------------------------------------------> 
-        <section class="container text-center my-3">
-            <h1>Editar una película</h1>
-            <form action="/peliculas/editar" method="POST">
-              
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Título de la película"
-                        name="titulo"
-                        required
-                    />
-                    </div>
-                    <div class="col-md-4">
-                    <input
-                        type="number"
-                        class="form-control"
-                        placeholder="Año de estreno"
-                        name="anio"
-                        required
-                    />
-                    </div>
-                    <div class="col-md-4">
-                    <select class="form-select" name="origen" required>
-                        <option value="">Seleccionar origen</option>
-                        <option value="nacional">Nacional</option>
-                        <option value="extranjera">Extranjera</option>
-                    </select>
-                    </div>
-                </div>
-          
-              <h6 class="text-start text-muted">Todos los campos son obligatorios</h6>
-          
-              <div class="d-grid">
-                <button type="submit" class="btn btn-block botonForm" disabled>Editar</button>
-              </div>
-              
-            </form>
-        </section>
-    <!------------------------------------- FOOTER ------------------------------------------>
-    <%- include('./footer'); %>
+<!------------------------------------- HEADER ---------------------------------------->
+<%- include('./header'); %>     
+<!------------------------------------- NAVBAR ---------------------------------------->
+<%- include('./navbar'); %>   
+<!------------------------------------- BODY ------------------------------------------> 
+<section class="container text-center my-3">
+    <h1>Editar una película</h1>
+    <form action="/peliculas/editar" method="POST">
+    
+        <h5 class="text-start">Datos actuales de la película</h5>
+        <div class="row mb-3">
+        <div class="col-md-4">
+            <input
+            type="text"
+            class="form-control"
+            placeholder="Título actual"
+            name="tituloViejo"
+            required
+            />
+        </div>
+        <div class="col-md-4">
+            <input
+            type="number"
+            class="form-control"
+            placeholder="Año actual"
+            name="anioViejo"
+            required
+            />
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" name="origenViejo" required>
+            <option value="">Origen actual</option>
+            <option value="nacional">Nacional</option>
+            <option value="extranjera">Extranjera</option>
+            </select>
+        </div>
+        </div>
+    
+        <h5 class="text-start">Datos nuevos de la película</h5>
+        <div class="row mb-3">
+        <div class="col-md-4">
+            <input
+            type="text"
+            class="form-control"
+            placeholder="Nuevo título"
+            name="tituloNuevo"
+            required
+            />
+        </div>
+        <div class="col-md-4">
+            <input
+            type="number"
+            class="form-control"
+            placeholder="Nuevo año"
+            name="anioNuevo"
+            required
+            />
+        </div>
+        </div>
+    
+        <h6 class="text-start text-muted">Todos los campos son obligatorios</h6>
+    
+        <div class="d-grid">
+        <button type="submit" class="btn btn-block botonForm">Editar</button>
+        </div>
+    </form>
+</section>
+    
+<% if (mensaje) { %>
+<p class="text-center"><%= mensaje %></p>
+<% } %>
+<!------------------------------------- FOOTER ------------------------------------------>
+<%- include('./footer'); %>

@@ -62,7 +62,7 @@ router.get("/internacionales", async (req, res) => {
 
 // POST /peliculas/agregar - Pagina con formulario para agregar peliculas
 router.get("/agregar", (req, res) => {
-  res.render("agregar");
+  res.render("agregar", { mensaje: null });
 });
 
 // Aca esta el metodo que usa la form para agregar pelicula
@@ -102,10 +102,16 @@ router.post("/agregar", async (req, res) => {
       `;
     }
 
-    res.redirect("/peliculas/listado");
+    res.render("agregar", {
+      mensaje: "Película insertada correctamente.",
+    });
+
+    //res.redirect("/peliculas/listado");
   } catch (error) {
     console.error("Error al agregar película:", error);
-    res.status(500).send("Error al agregar película");
+    res.render("agregar", {
+      mensaje: "Error al agregar película.",
+    });
   }
 });
 
@@ -119,7 +125,6 @@ router.post("/buscar_id", async (req, res) => {
   const { id, origen } = req.body;
 
   try {
-    // Buscamos si ya existe una pelicula con ese ID
     let busqueda;
 
     if (origen === "nacional") {
@@ -153,14 +158,18 @@ router.post("/buscar_id", async (req, res) => {
 
   } catch (error) {
     console.error("Error al buscar película:", error);
+    res.render("buscar", {
+      busqueda: null,
+      mensaje: "Error al buscar película.",
+    });
   }
 });
 
+// Aca esta el metodo que usa la form para buscar pelicula por titulo
 router.post("/buscar_titulo", async (req, res) => {
   const { titulo, origen } = req.body;
 
   try {
-    // Buscamos si ya existe una pelicula con ese titulo
     let busqueda;
 
     if (origen === "nacional") {
@@ -201,12 +210,73 @@ router.post("/buscar_titulo", async (req, res) => {
 
 // PUT /peliculas/editar - Pagina con formulario para editar peliculas
 router.get("/editar", (req, res) => {
-  res.render("editar");
+  res.render("editar", { mensaje: null});
 });
 
-// DELETE /peliculas/eliminar - Pagina con formulario para eliminar peliculas
+router.post("/editar", async (req, res) => {
+  const { tituloViejo, anioViejo, origenViejo, tituloNuevo, anioNuevo } = req.body;
+
+  try {
+    // Primero buscamos si el año nuevo ya existe o hay que insertarlo
+    // como hicimos antes pero esta vez es porque si llegan a updatear una pelicula a un año que no exite hay que agregarlo
+    let estreno = await database.sql`
+      SELECT id FROM estrenos_anios WHERE anio = ${anioNuevo}
+    `;
+
+    let estrenoId;
+
+    if (estreno.length > 0) {
+      // Aca comprobamos si ya existe o no el año ingresado
+      estrenoId = estreno[0].id;
+    } else {
+      // Si no existe, lo insertamos y usamos returning para recuperar el id de la query insert
+      const insert = await database.sql`
+        INSERT INTO estrenos_anios (anio) VALUES (${anioNuevo})
+        RETURNING id;
+      `;
+      estrenoId = insert[0].id;
+    }
+
+    // Actualizar según origen
+    let update;
+    if (origenViejo === "nacional") {
+      update = await database.sql`
+        UPDATE peliculas_nacionales
+        SET titulo = ${tituloNuevo}, estreno_id = ${estrenoId}
+        WHERE titulo = ${tituloViejo}
+        AND estreno_id = (SELECT id FROM estrenos_anios WHERE anio = ${anioViejo});
+      `;
+    } else {
+      update = await database.sql`
+        UPDATE peliculas_extranjeras
+        SET titulo = ${tituloNuevo}, estreno_id = ${estrenoId}
+        WHERE titulo = ${tituloViejo}
+        AND estreno_id = (SELECT id FROM estrenos_anios WHERE anio = ${anioViejo});
+      `;
+    }
+
+    // Use el metodo changes que detecta que si se detecto algun cambio por la query 
+    if (update.changes > 0) {
+      res.render("editar", {
+        mensaje: "Película actualizada correctamente.",
+      });
+    } else {
+      res.render("editar", {
+        mensaje:
+          "No se encontró ninguna película que coincida con los datos actuales.",
+      });
+    }
+  } catch (error) {
+    console.error("Error al editar película:", error);
+    res.render("editar", {
+      mensaje: "Error al intentar editar la película.",
+    });
+  }
+});
+
+// DELETE /peliculas/eliminar - Pagina con formulario para eliminar peliculas por titulo
 router.get("/eliminar", (req, res) => {
-  res.render("eliminar");
+  res.render("eliminar", { mensaje: null });
 });
 
 // Aca esta el metodo que usa la form para eliminar peliculas por titulo
@@ -214,26 +284,51 @@ router.post("/eliminar", async (req, res) => {
   const { titulo, origen } = req.body;
 
   try {
-    // Hacemos el delete dependiendo si es de origen nacional o extrangera
+
+    let busqueda;
+    //Buscamos apra ver si existe la pelicula en la db
     if (origen === "nacional") {
-      await database.sql`
-        DELETE FROM peliculas_nacionales
+      busqueda = await database.sql`
+        SELECT * FROM peliculas_nacionales
         WHERE titulo = ${titulo};
       `;
     } else {
-      await database.sql`
-        DELETE FROM peliculas_extranjeras
+      busqueda = await database.sql`
+        SELECT * FROM peliculas_extranjeras
         WHERE titulo = ${titulo};
       `;
     }
 
-    console.log("Película borrada");
-    res.redirect("/peliculas/listado");
+    if (busqueda.length > 0) {
+      // Hacemos el delete dependiendo si es de origen nacional o extrangera
+      if (origen === "nacional") {
+        await database.sql`
+          DELETE FROM peliculas_nacionales
+          WHERE titulo = ${titulo};
+        `;
+        res.render("eliminar", {
+          mensaje: "Película borrada correctamente.",
+        });
+      } else {
+        await database.sql`
+          DELETE FROM peliculas_extranjeras
+          WHERE titulo = ${titulo};
+        `;
+        res.render("eliminar", {
+          mensaje: "Película borrada correctamente.",
+        });
+      }
+    } else {
+      res.render("eliminar", {
+        mensaje: "No se encontró la película con ese título. Borrado abortado",
+      });
+    }
+
   } catch (error) {
-    //mensaje en consola para debug
     console.error("Error al borrar película:", error);
-    //mensaje en navegador
-    res.status(500).send("Error al borrar película");
+    res.render("eliminar", {
+      mensaje: "Error al borrar película.",
+    });
   }
 });
 
