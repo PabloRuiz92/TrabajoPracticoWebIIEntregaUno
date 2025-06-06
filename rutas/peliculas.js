@@ -9,17 +9,16 @@ const database = new Database(SQLITE_URL);
 // GET /peliculas/ - Obtiene todas las películas de la base de datos con el año de estreno
 router.get("/listado", async (req, res) => {
   try {
-    const peliculas =
-      await database.sql
+    const peliculas = await database.sql
         `SELECT pn.titulo, e.anio, 'Nacional' AS origen
         FROM peliculas_nacionales pn
         JOIN estrenos_anios e ON pn.estreno_id = e.id
-
         UNION ALL
-
         SELECT pe.titulo, e.anio, 'Extranjera' AS origen
         FROM peliculas_extranjeras pe
-        JOIN estrenos_anios e ON pe.estreno_id = e.id;`;
+        JOIN estrenos_anios e ON pe.estreno_id = e.id
+        ORDER BY anio;
+        `;
 
     res.render("listado", { peliculas });
   } catch (error) {
@@ -31,11 +30,12 @@ router.get("/listado", async (req, res) => {
 // GET /peliculas/nacionales - Obtiene todas las películas nacionales de la base de datos
 router.get("/nacionales", async (req, res) => {
   try {
-    const peliculas = 
-      await database.sql
+    const peliculas = await database.sql
         `SELECT pn.titulo, e.anio, 'Nacional' AS origen
         FROM peliculas_nacionales pn
-        JOIN estrenos_anios e ON pn.estreno_id = e.id`;
+        JOIN estrenos_anios e ON pn.estreno_id = e.id
+        ORDER BY e.anio;
+      `;
 
     res.render("nacionales", { peliculas });
   } catch (error) {
@@ -47,11 +47,12 @@ router.get("/nacionales", async (req, res) => {
 // GET /peliculas/extrangeras - Obtiene todas las películas internacionales de la base de datos
 router.get("/internacionales", async (req, res) => {
   try {
-    const peliculas = 
-      await database.sql
+    const peliculas = await database.sql
         `SELECT pe.titulo, e.anio, 'Extranjera' AS origen
         FROM peliculas_extranjeras pe
-        JOIN estrenos_anios e ON pe.estreno_id = e.id;`;
+        JOIN estrenos_anios e ON pe.estreno_id = e.id
+        ORDER BY e.anio;
+      `;
 
     res.render("internacionales", { peliculas });
   } catch (error) {
@@ -71,8 +72,8 @@ router.post("/agregar", async (req, res) => {
 
   try {
     // Buscamos si ya existe ese año
-    let estreno = await database.sql`
-      SELECT id FROM estrenos_anios WHERE anio = ${anio}
+    let estreno = await database.sql
+      `SELECT id FROM estrenos_anios WHERE anio = ${anio}
     `;
 
     let estrenoId;
@@ -82,8 +83,8 @@ router.post("/agregar", async (req, res) => {
       estrenoId = estreno[0].id;
     } else {
       // Si no existe, lo insertamos y usamos returning para recuperar el id de la query insert
-      const insert = await database.sql`
-        INSERT INTO estrenos_anios (anio) VALUES (${anio})
+      const insert = await database.sql
+        `INSERT INTO estrenos_anios (anio) VALUES (${anio})
         RETURNING id
       `;
       estrenoId = insert[0].id;
@@ -122,12 +123,12 @@ router.get("/buscar", (req, res) => {
 
 // Aca esta el metodo que usa la form para buscar pelicula por ID
 router.post("/buscar_id", async (req, res) => {
-  const { id, origen } = req.body;
+  const { id, origenId } = req.body;
 
   try {
     let busqueda;
 
-    if (origen === "nacional") {
+    if (origenId === "nacional") {
       busqueda = await database.sql`
         SELECT pn.id, pn.titulo, e.anio, 'Nacional' AS origen
         FROM peliculas_nacionales pn
@@ -167,12 +168,12 @@ router.post("/buscar_id", async (req, res) => {
 
 // Aca esta el metodo que usa la form para buscar pelicula por titulo
 router.post("/buscar_titulo", async (req, res) => {
-  const { titulo, origen } = req.body;
+  const { titulo, origenTitulo } = req.body;
 
   try {
     let busqueda;
 
-    if (origen === "nacional") {
+    if (origenTitulo === "nacional") {
       busqueda = await database.sql`
         SELECT pn.id, pn.titulo, e.anio, 'Nacional' AS origen
         FROM peliculas_nacionales pn
