@@ -3,22 +3,24 @@
     <!------------------------------------- NAVBAR ---------------------------------------->
     <%- include('./navbar'); %>
     <!------------------------------------- BODY ------------------------------------------>  
-    <h1>Películas Nacionales</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Año</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% peliculas.forEach(pelicula => { %>
+    <div class="container my-3">
+      <h1>Películas Nacionales</h1>
+      <table>
+        <thead>
           <tr>
-            <td><%= pelicula.titulo %></td>
-            <td><%= pelicula.anio %></td>
+            <th>Título</th>
+            <th>Año</th>
           </tr>
-        <% }); %>
-      </tbody>
-    </table>  
+        </thead>
+        <tbody>
+          <% peliculas.forEach(pelicula => { %>
+            <tr>
+              <td><%= pelicula.titulo %></td>
+              <td><%= pelicula.anio %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table> 
+    </div> 
     <!------------------------------------- FOOTER ------------------------------------------>
     <%- include('./footer'); %>

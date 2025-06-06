@@ -3,7 +3,7 @@ const router = express.Router();
 const { Database } = require("@sqlitecloud/drivers");
 const { SQLITE_URL } = require("../config");
 
-// Crear una instancia de la base
+// Crear una instancia de la base de datos
 const database = new Database(SQLITE_URL);
 
 // GET /peliculas/ - Obtiene todas las películas de la base de datos con el año de estreno
@@ -95,7 +95,7 @@ router.post("/agregar", async (req, res) => {
         INSERT INTO peliculas_nacionales (titulo, estreno_id)
         VALUES (${titulo}, ${estrenoId})
       `;
-    } else if (origen === "extranjera") {
+    } else {
       await database.sql`
         INSERT INTO peliculas_extranjeras (titulo, estreno_id)
         VALUES (${titulo}, ${estrenoId})
@@ -109,7 +109,97 @@ router.post("/agregar", async (req, res) => {
   }
 });
 
-// PUT /peliculas/editar - Pagina con formulario para eliminar peliculas
+// GET /peliculas/buscar - Pagina con formularios para buscar peliculas por ID o titulo
+router.get("/buscar", (req, res) => {
+  res.render("buscar", { mensaje: null, busqueda: null });
+});
+
+// Aca esta el metodo que usa la form para buscar pelicula por ID
+router.post("/buscar_id", async (req, res) => {
+  const { id, origen } = req.body;
+
+  try {
+    // Buscamos si ya existe una pelicula con ese ID
+    let busqueda;
+
+    if (origen === "nacional") {
+      busqueda = await database.sql`
+        SELECT pn.id, pn.titulo, e.anio, 'Nacional' AS origen
+        FROM peliculas_nacionales pn
+        JOIN estrenos_anios e ON pn.estreno_id = e.id
+        WHERE pn.id = ${id}
+      `;
+    } else {
+      busqueda = await database.sql`
+        SELECT pe.id, pe.titulo, e.anio, 'Extranjera' AS origen
+        FROM peliculas_extranjeras pe
+        JOIN estrenos_anios e ON pe.estreno_id = e.id
+        WHERE pe.id = ${id}
+      `;
+    }
+
+    if (busqueda.length > 0) {
+      
+      res.render("buscar", {
+        busqueda: busqueda[0],
+        mensaje: "Película encontrada.",
+      });
+    } else {
+      res.render("buscar", {
+        busqueda: null,
+        mensaje: "No se encontró la película con ese ID.",
+      });
+    }
+
+  } catch (error) {
+    console.error("Error al buscar película:", error);
+  }
+});
+
+router.post("/buscar_titulo", async (req, res) => {
+  const { titulo, origen } = req.body;
+
+  try {
+    // Buscamos si ya existe una pelicula con ese titulo
+    let busqueda;
+
+    if (origen === "nacional") {
+      busqueda = await database.sql`
+        SELECT pn.id, pn.titulo, e.anio, 'Nacional' AS origen
+        FROM peliculas_nacionales pn
+        JOIN estrenos_anios e ON pn.estreno_id = e.id
+        WHERE pn.titulo = ${titulo}
+      `;
+    } else {
+      busqueda = await database.sql`
+        SELECT pe.id, pe.titulo, e.anio, 'Extranjera' AS origen
+        FROM peliculas_extranjeras pe
+        JOIN estrenos_anios e ON pe.estreno_id = e.id
+        WHERE pe.titulo = ${titulo}
+      `;
+    }
+
+    if (busqueda.length > 0) {
+      res.render("buscar", {
+        busqueda: busqueda[0],
+        mensaje: "Película encontrada.",
+      });
+    } else {
+      res.render("buscar", {
+        busqueda: null,
+        mensaje: "No se encontró la película con ese título.",
+      });
+    }
+  } catch (error) {
+    console.error("Error al buscar película:", error);
+    res.render("buscar", {
+      busqueda: null,
+      mensaje: "Error al buscar película.",
+    });
+  }
+});
+
+// PUT /peliculas/editar - Pagina con formulario para editar peliculas
 router.get("/editar", (req, res) => {
   res.render("editar");
 });
@@ -119,7 +209,7 @@ router.get("/eliminar", (req, res) => {
   res.render("eliminar");
 });
 
-// Aca esta el metodo que usa la form para agreguar agregar
+// Aca esta el metodo que usa la form para eliminar peliculas por titulo
 router.post("/eliminar", async (req, res) => {
   const { titulo, origen } = req.body;
 
@@ -137,7 +227,7 @@ router.post("/eliminar", async (req, res) => {
       `;
     }
 
-    console.log("Película borrada")
+    console.log("Película borrada");
     res.redirect("/peliculas/listado");
   } catch (error) {
     //mensaje en consola para debug
@@ -148,6 +238,7 @@ router.post("/eliminar", async (req, res) => {
 });
 
 module.exports = router;
+
 /*
 MODELO VIEJO QUE UTILIZABA BD EN MEMORIA LOCAL COMO ARCHIVO .JSON
 //fs es un módulo para manejar archivos y lo vamos a necesitar para leer el JSON
