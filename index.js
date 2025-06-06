@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware para permitir recibir JSON en el body de las solicitudes
 app.use(express.json());
 
-// Aca agregamos el css y public para las imagenes
+// Aca agregamos el css y usamos /public como ruta para las imagenes para las imagenes
 app.use("/css", express.static(path.join(__dirname, "css")));
 app.use(express.static("public"));
 
@@ -22,7 +22,6 @@ app.use("/peliculas", peliculasRouter);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Ruta
 app.get("/", (req, res) => {
   res.render("index");
 });
