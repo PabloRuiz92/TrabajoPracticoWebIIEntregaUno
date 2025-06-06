@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run cypress:run",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +16,8 @@
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+  "cypress": "^14.4.1"
   }
 }
