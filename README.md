@@ -27,17 +27,18 @@ o	Eliminar películas por ID o por título
 
 Endpoints desarrollados:
 
-•	GET /peliculas – Página de inicio
-•	GET /peliculas/nacionales – Películas nacionales
-•	GET /peliculas/internacionales – Películas internacionales
-•	GET /peliculas/buscar – Buscar por ID o título
-•	POST /peliculas/buscar – Resultado de búsqueda
-•	GET /peliculas/agregar – Formulario para agregar película
-•	POST /peliculas/agregar – Alta de película
-•	GET /peliculas/editar – Formulario para editar película
-•	POST /peliculas/editar – Guardado de cambios
-•	GET /peliculas/eliminar – Formulario para eliminar película
-•	POST /peliculas/eliminar – Eliminación por ID o título
+- **GET /** – Página de inicio
+- **GET /peliculas** – Listado general de películas
+- **GET /peliculas/nacionales** – Películas nacionales
+- **GET /peliculas/internacionales** – Películas internacionales
+- **GET /peliculas/buscar** – Formulario para buscar por ID o título
+- **POST /peliculas/buscar** – Resultado de la búsqueda
+- **GET /peliculas/agregar** – Formulario para agregar película
+- **POST /peliculas/agregar** – Alta de una nueva película
+- **GET /peliculas/editar** – Formulario para seleccionar película a editar
+- **POST /peliculas/editar** – Guardado de los cambios
+- **GET /peliculas/eliminar** – Formulario para eliminar película
+- **POST /peliculas/eliminar** – Eliminación por ID o título
 
 
 •	GET /peliculas/anios/:desde/:hasta – Muestra los periodos entre 2 años
