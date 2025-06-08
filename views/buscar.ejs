@@ -8,7 +8,7 @@
       <form action="/peliculas/buscar_id" method="POST">
         
           <div class="row mb-3">
-              <div class="col-md-6">
+              <div class="col-md-12">
               <input
                   type="number"
                   class="form-control"
@@ -16,13 +16,6 @@
                   name="id"
                   required
               />
-              </div>
-              <div class="col-md-6">
-              <select class="form-select" name="origenId" required>
-                  <option value="">Seleccionar origen</option>
-                  <option value="nacional">Nacional</option>
-                  <option value="extranjera">Extranjera</option>
-              </select>
               </div>
           </div>
     
@@ -39,7 +32,7 @@
       <form action="/peliculas/buscar_titulo" method="POST">
         
           <div class="row mb-3">
-              <div class="col-md-6">
+              <div class="col-md-12">
                   <input
                   type="text"
                   class="form-control"
@@ -47,13 +40,6 @@
                   name="titulo"
                   required
               />
-              </div>
-              <div class="col-md-6">
-              <select class="form-select" name="origenTitulo" required>
-                  <option value="">Seleccionar origen</option>
-                  <option value="nacional">Nacional</option>
-                  <option value="extranjera">Extranjera</option>
-              </select>
               </div>
           </div>
     
@@ -77,16 +63,16 @@
             <tr>
               <th>ID</th>
               <th>Título</th>
-              <th>Año</th>
               <th>Origen</th>
+              <th>Año</th>
             </tr>
           </thead>
       <tbody>
             <tr>
               <td><%= busqueda.id %></td>
               <td><%= busqueda.titulo %></td>
-              <td><%= busqueda.anio %></td>
               <td><%= busqueda.origen %></td>
+              <td><%= busqueda.anio %></td>
             </tr>
         </tbody>
       </table>

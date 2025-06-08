@@ -6,58 +6,56 @@ const { SQLITE_URL } = require("../config");
 // Crear una instancia de la base de datos
 const database = new Database(SQLITE_URL);
 
-// GET /peliculas/ - Obtiene todas las películas de la base de datos con el año de estreno
+// GET /peliculas/ - Obtiene todas las películas de la base de datos con el año de estreno y el origen
 router.get("/listado", async (req, res) => {
   try {
-    const peliculas = await database.sql
-        `SELECT pn.titulo, e.anio, 'Nacional' AS origen
-        FROM peliculas_nacionales pn
-        JOIN estrenos_anios e ON pn.estreno_id = e.id
-        UNION ALL
-        SELECT pe.titulo, e.anio, 'Extranjera' AS origen
-        FROM peliculas_extranjeras pe
-        JOIN estrenos_anios e ON pe.estreno_id = e.id
-        ORDER BY anio;
-        `;
+    const peliculas = await database.sql`
+      SELECT p.titulo, pa.anio, po.origen
+      FROM peliculas p
+      JOIN peliculas_anios pa ON p.anio_id = pa.id
+      JOIN peliculas_origen po ON p.origen_id = po.id
+      ORDER BY pa.anio;
+    `;
 
     res.render("listado", { peliculas });
   } catch (error) {
     console.error("Error al obtener películas:", error.message);
-    res.status(500).json({ error: "Error al obtener películas desde la base de datos" });
   }
 });
 
 // GET /peliculas/nacionales - Obtiene todas las películas nacionales de la base de datos
 router.get("/nacionales", async (req, res) => {
   try {
-    const peliculas = await database.sql
-        `SELECT pn.titulo, e.anio, 'Nacional' AS origen
-        FROM peliculas_nacionales pn
-        JOIN estrenos_anios e ON pn.estreno_id = e.id
-        ORDER BY e.anio;
-      `;
+    const peliculas = await database.sql`
+      SELECT p.titulo, pa.anio, po.origen
+      FROM peliculas p
+      JOIN peliculas_anios pa ON p.anio_id = pa.id
+      JOIN peliculas_origen po ON p.origen_id = po.id
+      WHERE po.origen = 'Nacional'
+      ORDER BY pa.anio;
+    `;
 
     res.render("nacionales", { peliculas });
   } catch (error) {
     console.error("Error al obtener películas:", error.message);
-    res.status(500).json({ error: "Error al obtener películas desde la base de datos" });
   }
 });
 
 // GET /peliculas/extrangeras - Obtiene todas las películas internacionales de la base de datos
 router.get("/internacionales", async (req, res) => {
   try {
-    const peliculas = await database.sql
-        `SELECT pe.titulo, e.anio, 'Extranjera' AS origen
-        FROM peliculas_extranjeras pe
-        JOIN estrenos_anios e ON pe.estreno_id = e.id
-        ORDER BY e.anio;
-      `;
+    const peliculas = await database.sql`
+      SELECT p.titulo, pa.anio, po.origen
+      FROM peliculas p
+      JOIN peliculas_anios pa ON p.anio_id = pa.id
+      JOIN peliculas_origen po ON p.origen_id = po.id
+      WHERE po.origen = 'Internacional'
+      ORDER BY pa.anio;
+    `;
 
     res.render("internacionales", { peliculas });
   } catch (error) {
-    console.error("Error al obtener listado:", error.message);
-    res.status(500).json({ error: "Error al obtener películas desde la base de datos" });
+    console.error("Error al obtener películas:", error.message);
   }
 });
 
@@ -72,34 +70,35 @@ router.post("/agregar", async (req, res) => {
 
   try {
     // Buscamos si ya existe ese año
-    let estreno = await database.sql
-      `SELECT id FROM estrenos_anios WHERE anio = ${anio}
+    let comprobar_anio =
+      await database.sql`SELECT id FROM peliculas_anios WHERE anio = ${anio}
     `;
 
-    let estrenoId;
+    let anioId;
 
-    if (estreno.length > 0) {
-      // Aca comprobamos si ya existe o no el año ingresado
-      estrenoId = estreno[0].id;
+    // Aca comprobamos si ya existe o no el año ingresado
+    if (comprobar_anio.length > 0) {
+      // Si existe lo guardamos para el insert
+      anioId = comprobar_anio[0].id;
     } else {
       // Si no existe, lo insertamos y usamos returning para recuperar el id de la query insert
-      const insert = await database.sql
-        `INSERT INTO estrenos_anios (anio) VALUES (${anio})
+      const insert = await database.sql`INSERT INTO peliculas_anios (anio) 
+        VALUES (${anio})
         RETURNING id
       `;
-      estrenoId = insert[0].id;
+      anioId = insert[0].id;
     }
 
     // Hacemos el insert dependiendo si es de origen nacional o extrangera
-    if (origen === "nacional") {
+    if (origen === "Nacional") {
       await database.sql`
-        INSERT INTO peliculas_nacionales (titulo, estreno_id)
-        VALUES (${titulo}, ${estrenoId})
+        INSERT INTO peliculas (titulo, anio_id, origen_id)
+        VALUES (${titulo}, ${anioId}, 1)
       `;
     } else {
       await database.sql`
-        INSERT INTO peliculas_extranjeras (titulo, estreno_id)
-        VALUES (${titulo}, ${estrenoId})
+        INSERT INTO peliculas (titulo, anio_id, origen_id)
+        VALUES (${titulo}, ${anioId}, 2)
       `;
     }
 
@@ -123,29 +122,18 @@ router.get("/buscar", (req, res) => {
 
 // Aca esta el metodo que usa la form para buscar pelicula por ID
 router.post("/buscar_id", async (req, res) => {
-  const { id, origenId } = req.body;
+  const { id } = req.body;
 
   try {
-    let busqueda;
-
-    if (origenId === "nacional") {
-      busqueda = await database.sql`
-        SELECT pn.id, pn.titulo, e.anio, 'Nacional' AS origen
-        FROM peliculas_nacionales pn
-        JOIN estrenos_anios e ON pn.estreno_id = e.id
-        WHERE pn.id = ${id}
-      `;
-    } else {
-      busqueda = await database.sql`
-        SELECT pe.id, pe.titulo, e.anio, 'Extranjera' AS origen
-        FROM peliculas_extranjeras pe
-        JOIN estrenos_anios e ON pe.estreno_id = e.id
-        WHERE pe.id = ${id}
-      `;
-    }
+    let busqueda = await database.sql`
+      SELECT p.id, p.titulo, pa.anio, po.origen
+      FROM peliculas p
+      JOIN peliculas_anios pa ON p.anio_id = pa.id
+      JOIN peliculas_origen po ON p.origen_id = po.id
+      WHERE p.id = ${id}
+    `;
 
     if (busqueda.length > 0) {
-      
       res.render("buscar", {
         busqueda: busqueda[0],
         mensaje: "Película encontrada.",
@@ -168,26 +156,16 @@ router.post("/buscar_id", async (req, res) => {
 
 // Aca esta el metodo que usa la form para buscar pelicula por titulo
 router.post("/buscar_titulo", async (req, res) => {
-  const { titulo, origenTitulo } = req.body;
+  const { titulo } = req.body;
 
   try {
-    let busqueda;
-
-    if (origenTitulo === "nacional") {
-      busqueda = await database.sql`
-        SELECT pn.id, pn.titulo, e.anio, 'Nacional' AS origen
-        FROM peliculas_nacionales pn
-        JOIN estrenos_anios e ON pn.estreno_id = e.id
-        WHERE pn.titulo = ${titulo}
+    let busqueda = await database.sql`
+        SELECT p.id, p.titulo, pa.anio, po.origen
+        FROM peliculas p
+        JOIN peliculas_anios pa ON p.anio_id = pa.id
+        JOIN peliculas_origen po ON p.origen_id = po.id
+        WHERE p.titulo = ${titulo}
       `;
-    } else {
-      busqueda = await database.sql`
-        SELECT pe.id, pe.titulo, e.anio, 'Extranjera' AS origen
-        FROM peliculas_extranjeras pe
-        JOIN estrenos_anios e ON pe.estreno_id = e.id
-        WHERE pe.titulo = ${titulo}
-      `;
-    }
 
     if (busqueda.length > 0) {
       res.render("buscar", {
@@ -214,49 +192,41 @@ router.get("/editar", (req, res) => {
   res.render("editar", { mensaje: null});
 });
 
+// Aca esta el metodo que usa la form para editar peliculas
 router.post("/editar", async (req, res) => {
-  const { tituloViejo, anioViejo, origenViejo, tituloNuevo, anioNuevo } = req.body;
+  const { tituloViejo, anioViejo, origenViejo, tituloNuevo, anioNuevo, origenNuevo } = req.body;
 
   try {
     // Primero buscamos si el año nuevo ya existe o hay que insertarlo
     // como hicimos antes pero esta vez es porque si llegan a updatear una pelicula a un año que no exite hay que agregarlo
-    let estreno = await database.sql`
-      SELECT id FROM estrenos_anios WHERE anio = ${anioNuevo}
+    let comprobar_anio =
+      await database.sql`SELECT id FROM peliculas_anios WHERE anio = ${anioNuevo}
     `;
 
-    let estrenoId;
+    let anioId;
 
-    if (estreno.length > 0) {
-      // Aca comprobamos si ya existe o no el año ingresado
-      estrenoId = estreno[0].id;
+    // Aca comprobamos si ya existe o no el año ingresado
+    if (comprobar_anio.length > 0) {
+      // Si existe lo guardamos para el insert
+      anioId = comprobar_anio[0].id;
     } else {
       // Si no existe, lo insertamos y usamos returning para recuperar el id de la query insert
-      const insert = await database.sql`
-        INSERT INTO estrenos_anios (anio) VALUES (${anioNuevo})
-        RETURNING id;
+      const insert = await database.sql`INSERT INTO peliculas_anios (anio) 
+        VALUES (${anioNuevo})
+        RETURNING id
       `;
-      estrenoId = insert[0].id;
+      anioId = insert[0].id;
     }
 
-    // Actualizar según origen
-    let update;
-    if (origenViejo === "nacional") {
-      update = await database.sql`
-        UPDATE peliculas_nacionales
-        SET titulo = ${tituloNuevo}, estreno_id = ${estrenoId}
+    let update = await database.sql`
+        UPDATE peliculas
+        SET titulo = ${tituloNuevo}, anio_id = ${anioId}, origen_id = ${origenNuevo}
         WHERE titulo = ${tituloViejo}
-        AND estreno_id = (SELECT id FROM estrenos_anios WHERE anio = ${anioViejo});
+        AND anio_id = (SELECT id FROM peliculas_anios WHERE anio = ${anioViejo})
+        AND origen_id = ${origenViejo}
       `;
-    } else {
-      update = await database.sql`
-        UPDATE peliculas_extranjeras
-        SET titulo = ${tituloNuevo}, estreno_id = ${estrenoId}
-        WHERE titulo = ${tituloViejo}
-        AND estreno_id = (SELECT id FROM estrenos_anios WHERE anio = ${anioViejo});
-      `;
-    }
 
-    // Use el metodo changes que detecta que si se detecto algun cambio por la query 
+    // Use el metodo changes que detecta que si se realizo algun cambio en las table peliculas por la query
     if (update.changes > 0) {
       res.render("editar", {
         mensaje: "Película actualizada correctamente.",
@@ -264,7 +234,7 @@ router.post("/editar", async (req, res) => {
     } else {
       res.render("editar", {
         mensaje:
-          "No se encontró ninguna película que coincida con los datos actuales.",
+          "No se encontró ninguna película que coincida con los datos proporcionados.",
       });
     }
   } catch (error) {
@@ -281,50 +251,65 @@ router.get("/eliminar", (req, res) => {
 });
 
 // Aca esta el metodo que usa la form para eliminar peliculas por titulo
-router.post("/eliminar", async (req, res) => {
-  const { titulo, origen } = req.body;
+router.post("/eliminar_id", async (req, res) => {
+  const { id } = req.body;
 
   try {
-
-    let busqueda;
     //Buscamos apra ver si existe la pelicula en la db
-    if (origen === "nacional") {
-      busqueda = await database.sql`
-        SELECT * FROM peliculas_nacionales
-        WHERE titulo = ${titulo};
+    let busqueda = await database.sql`
+        SELECT * FROM peliculas
+        WHERE id = ${id};
       `;
-    } else {
-      busqueda = await database.sql`
-        SELECT * FROM peliculas_extranjeras
-        WHERE titulo = ${titulo};
-      `;
-    }
 
     if (busqueda.length > 0) {
-      // Hacemos el delete dependiendo si es de origen nacional o extrangera
-      if (origen === "nacional") {
-        await database.sql`
-          DELETE FROM peliculas_nacionales
-          WHERE titulo = ${titulo};
-        `;
-        res.render("eliminar", {
-          mensaje: "Película borrada correctamente.",
-        });
-      } else {
-        await database.sql`
-          DELETE FROM peliculas_extranjeras
-          WHERE titulo = ${titulo};
-        `;
-        res.render("eliminar", {
-          mensaje: "Película borrada correctamente.",
-        });
-      }
+      // Si existe la borramos
+      await database.sql`
+        DELETE FROM peliculas
+        WHERE id = ${id};
+      `;
+      res.render("eliminar", {
+        mensaje: `Película "${busqueda[0].titulo}" borrada correctamente.`,
+      });
+
+    } else {
+      res.render("eliminar", {
+        mensaje: "No se encontró la película con ese ID. Borrado abortado",
+      });
+    }
+  } catch (error) {
+    console.error("Error al borrar película:", error);
+    res.render("eliminar", {
+      mensaje: "Error al borrar película.",
+    });
+  }
+});
+
+// Aca esta el metodo que usa la form para eliminar peliculas por titulo
+router.post("/eliminar_titulo", async (req, res) => {
+  const { titulo } = req.body;
+
+  try {
+    //Buscamos apra ver si existe la pelicula en la db
+    let busqueda = await database.sql`
+        SELECT * FROM peliculas
+        WHERE titulo = ${titulo};
+      `;
+
+    if (busqueda.length > 0) {
+      // Si existe la borramos
+      await database.sql`
+        DELETE FROM peliculas
+        WHERE titulo = ${titulo};
+      `;
+      res.render("eliminar", {
+        mensaje: `Película "${busqueda[0].titulo}" borrada correctamente.`,
+      });
+
     } else {
       res.render("eliminar", {
         mensaje: "No se encontró la película con ese título. Borrado abortado",
       });
     }
-
   } catch (error) {
     console.error("Error al borrar película:", error);
     res.render("eliminar", {
