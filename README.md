@@ -1,40 +1,44 @@
-# Reporte
+Descripción del proyecto:
 
-## Descripción del Proyecto:
-Este proyecto consiste en una aplicación desarrollada en Node.js utilizando el framework
-Express. Consiste en una API REST que consume los datos extraídos del portal oficial de datos
-públicos del gobierno argentino permitiendo gestionar la información de películas
-mediante peticiones HTTP. La API permite realizar operaciones CRUD (Obtener, agregar,
-modificar y eliminar) y otras operaciones con lógica interna.
+Este proyecto consiste en una aplicación desarrollada en Node.js utilizando el framework Express, complementada con vistas dinámicas utilizando EJS. La aplicación permite gestionar un catálogo de películas, almacenadas en una base de datos SQLite Cloud. La interfaz permite listar, buscar, agregar, modificar y eliminar películas, además de visualizar estadísticas por año y origen. 
+Se utilizo Bootstrap para el desarrollo de la parte frontend y se uso Cypress para la automatización de pruebas.
 
-## Fuente de datos:
-Se utilizó un dataset derivado del portal público del Gobierno argentino:
+---
 
-Titulo: Estrenos de cine por origen del film
+Estructura de la base de datos utilizada:
+•	peliculas: contiene el título de la película, el ID del año y el ID del origen.
+•	peliculas_anios: contiene los distintos años de estreno.
+•	peliculas_origen: contiene los tipos de origen posibles: 'Nacional' o 'Internacional'.
 
-URL: https://datos.gob.ar/dataset/cultura-sector-audiovisual/archivo/cultura_26914562-e043-4690-8251-fc94dd5ad3cd
+---
 
-Formato: JSON
+Funcionalidad de la aplicación:
 
-Se eligió esta fuente por la facilidad que ofrece para la carga de datos y su disponibilidad en el
-portal público del gobierno argentino, siendo esta nuestra primera experiencia en el desarrollo
-con Node.js y Express.
+La aplicación permite realizar las siguientes acciones:
+-	Listar todas las películas registradas de forma general o discriminando por origen
+-	Buscar películas por ID o por título
+-	Realizar las siguientes acciones a través de formularios:
+o	Buscar películas por ID o por título
+o	Agregar nuevas películas
+o	Editar películas existentes
+o	Eliminar películas por ID o por título
 
-## Endpoints desarrollados:
-Se desarrollaron los siguientes endpoints básicos de la API REST:
+---
 
-• GET /peliculas – Obtener todos las periodos
+Endpoints desarrollados:
 
-• POST /peliculas – Agregar un periodo nuevo
+•	GET /peliculas – Página de inicio
+•	GET /peliculas/nacionales – Películas nacionales
+•	GET /peliculas/internacionales – Películas internacionales
+•	GET /peliculas/buscar – Buscar por ID o título
+•	POST /peliculas/buscar – Resultado de búsqueda
+•	GET /peliculas/agregar – Formulario para agregar película
+•	POST /peliculas/agregar – Alta de película
+•	GET /peliculas/editar – Formulario para editar película
+•	POST /peliculas/editar – Guardado de cambios
+•	GET /peliculas/eliminar – Formulario para eliminar película
+•	POST /peliculas/eliminar – Eliminación por ID o título
 
-• PUT /peliculas/id/:id – Modificar un periodo existente
-
-• DELETE /peliculas/id/:id – Eliminar un periodo por ID
-
-
-Además, se implementaron las siguientes operaciones con lógica interna:
-
-•	GET /peliculas/anio/:anio –  Busca periodo por año
 
 •	GET /peliculas/anios/:desde/:hasta – Muestra los periodos entre 2 años
 
