@@ -41,9 +41,3 @@ Endpoints desarrollados:
 - **POST /peliculas/eliminar** – Eliminación por ID o título
 
 
-•	GET /peliculas/anios/:desde/:hasta – Muestra los periodos entre 2 años
-
-•	GET /peliculas/aniosTotal/:desde/:hasta – Busca por rango de años y muestra el total de peliculas extranjeras/locales
-
-•	GET /peliculas/comparaAnios?anio1=value&anio2=value – Compara la cantidad total de peliculas en 2 años diferentes y responde que año tuvo más estrenos
-
