@@ -6,9 +6,9 @@ Se utilizo Bootstrap para el desarrollo de la parte frontend y se uso Cypress pa
 ---
 
 Estructura de la base de datos utilizada:
-•	peliculas: contiene el título de la película, el ID del año y el ID del origen.
-•	peliculas_anios: contiene los distintos años de estreno.
-•	peliculas_origen: contiene los tipos de origen posibles: 'Nacional' o 'Internacional'.
+- peliculas: contiene el título de la película, el ID del año y el ID del origen.
+- peliculas_anios: contiene los distintos años de estreno.
+- peliculas_origen: contiene los tipos de origen posibles: 'Nacional' o 'Internacional'.
 
 ---
 
