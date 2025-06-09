@@ -1,10 +1,10 @@
 describe("Pruebas del CRUD", () => {
-  it("Puede agregar una película nueva", () => {
+  it("PRueba de agregar una película nueva", () => {
     cy.visit("http://localhost:7050/peliculas/agregar");
 
     cy.get('input[name="titulo"]').type("Película para testing");
     cy.get('input[name="anio"]').type("2024");
-    cy.get('select[name="origen"]').select("nacional");
+    cy.get('select[name="origen"]').select("Nacional");
 
     cy.get('button[type="submit"]').click();
 
@@ -17,7 +17,6 @@ describe("Pruebas del CRUD", () => {
     cy.visit("http://localhost:7050/peliculas/buscar");
 
     cy.get('input[name="titulo"]').type("Película para testing");
-    cy.get('select[name="origenTitulo"]').select("nacional");
 
     cy.contains("button", "Buscar por Título").click();
 
@@ -33,15 +32,16 @@ describe("Pruebas del CRUD", () => {
 
     cy.get('input[name="tituloViejo"]').type("Película para testing");
     cy.get('input[name="anioViejo"]').type("2024");
-    cy.get('select[name="origenViejo"]').select("nacional");
+    cy.get('select[name="origenViejo"]').select("Nacional");
 
     cy.get('input[name="tituloNuevo"]').type("Película para testing");
     cy.get('input[name="anioNuevo"]').type("2021");
+    cy.get('select[name="origenNuevo"]').select("Internacional");
 
     cy.get('button[type="submit"]').click();
 
     cy.contains("Película actualizada correctamente.");
-    cy.visit("http://localhost:7050/peliculas/nacionales");
+    cy.visit("http://localhost:7050/peliculas/internacionales");
     cy.contains("Película para testing");
   });
 
@@ -49,12 +49,11 @@ describe("Pruebas del CRUD", () => {
     cy.visit("http://localhost:7050/peliculas/eliminar");
 
     cy.get('input[name="titulo"]').type("Película para testing");
-    cy.get('select[name="origen"]').select("nacional");
 
-    cy.get('button[type="submit"]').click();
+    cy.contains("button", "Eliminar por título").click();
 
-    cy.contains("Película borrada correctamente.");
-    cy.visit("http://localhost:7050/peliculas/nacionales");
+    cy.contains('Película "Película para testing" borrada correctamente.');
+    cy.visit("http://localhost:7050/peliculas/internacionales");
     cy.get("body").should("not.contain", "Película para testing");
   });
 });
