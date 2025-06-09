@@ -1,0 +1,40 @@
+<!------------------------------------- HEADER ---------------------------------------->
+<%- include('./header'); %>     
+<!------------------------------------- NAVBAR ---------------------------------------->
+<%- include('./navbar'); %>   
+<!------------------------------------- BODY ------------------------------------------> 
+<section class="container text-center my-3">
+    <h1>Comparador de cantidad de estrenos entre años</h1>
+    <form action="/peliculas/comparar" method="POST">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <select class="form-select" name="anioA" required>
+            <option value="">Año A</option>
+            <% anios.forEach(item => { %>
+              <option value="<%= item.anio %>"><%= item.anio %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <select class="form-select" name="anioB" required>
+            <option value="">Año B</option>
+            <% anios.forEach(item => { %>
+              <option value="<%= item.anio %>"><%= item.anio %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+  
+      <h6 class="text-start text-muted">Todos los campos son obligatorios</h6>
+  
+      <div class="d-grid">
+        <button type="submit" class="btn btn-block botonForm">Comparar</button>
+      </div>
+    </form>
+  
+    <% if (mensaje) { %>
+      <h1 class="text-center mt-3"><%= mensaje %></h1>
+    <% } %>
+  </section>
+<!------------------------------------- FOOTER ------------------------------------------>
+<%- include('./footer'); %>

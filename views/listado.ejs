@@ -8,6 +8,7 @@
   <table>
     <thead>
       <tr>
+        <th>ID</th>
         <th>Título</th>
         <th>Origen</th>
         <th>Año</th>
@@ -16,6 +17,7 @@
     <tbody>
       <% peliculas.forEach(pelicula => { %>
         <tr>
+          <td><%= pelicula.id %></td>
           <td><%= pelicula.titulo %></td>
           <td><%= pelicula.origen %></td>
           <td><%= pelicula.anio %></td>
