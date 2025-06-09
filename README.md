@@ -18,10 +18,10 @@ La aplicación permite realizar las siguientes acciones:
 -	Listar todas las películas registradas de forma general o discriminando por origen
 -	Buscar películas por ID o por título
 -	Realizar las siguientes acciones a través de formularios:
-o	Buscar películas por ID o por título
-o	Agregar nuevas películas
-o	Editar películas existentes
-o	Eliminar películas por ID o por título
+-	  Buscar películas por ID o por título
+-	  Agregar nuevas películas
+-	  Editar películas existentes
+-	  Eliminar películas por ID o por título
 
 ---
 
