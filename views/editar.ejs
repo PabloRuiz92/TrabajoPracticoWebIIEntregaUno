@@ -9,31 +9,12 @@
     
         <h5 class="text-start">Datos actuales de la película</h5>
         <div class="row mb-3">
-        <div class="col-md-4">
-            <input
-            type="text"
-            class="form-control"
-            placeholder="Título actual"
-            name="tituloViejo"
-            required
-            />
-        </div>
-        <div class="col-md-4">
-            <input
-            type="number"
-            min="1900"
-            max="2099"
-            class="form-control"
-            placeholder="Año actual"
-            name="anioViejo"
-            required
-            />
-        </div>
-        <div class="col-md-4">
-            <select class="form-select" name="origenViejo" required>
-            <option value="">Origen actual</option>
-            <option value="1">Nacional</option>
-            <option value="2">Internacional</option>
+        <div class="col-md-12">
+            <select class="form-select" name="tituloViejo" required>
+                <option value="">Título actual</option>
+                <% titulos.forEach(item => { %>
+                  <option value="<%= item.titulo %>"><%= item.titulo %></option>
+                <% }); %>
             </select>
         </div>
         </div>
