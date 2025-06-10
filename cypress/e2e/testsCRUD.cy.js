@@ -30,11 +30,9 @@ describe("Pruebas del CRUD", () => {
     
     cy.visit("http://localhost:7050/peliculas/editar");
 
-    cy.get('input[name="tituloViejo"]').type("Película para testing");
-    cy.get('input[name="anioViejo"]').type("2024");
-    cy.get('select[name="origenViejo"]').select("Nacional");
+    cy.get('select[name="tituloViejo"]').select("Película para testing");
 
-    cy.get('input[name="tituloNuevo"]').type("Película para testing");
+    cy.get('input[name="tituloNuevo"]').type("Película para testing editada");
     cy.get('input[name="anioNuevo"]').type("2021");
     cy.get('select[name="origenNuevo"]').select("Internacional");
 
@@ -42,18 +40,23 @@ describe("Pruebas del CRUD", () => {
 
     cy.contains("Película actualizada correctamente.");
     cy.visit("http://localhost:7050/peliculas/internacionales");
-    cy.contains("Película para testing");
+    cy.contains("Película para testing editada");
+    cy.visit("http://localhost:7050/peliculas/nacionales");
+    cy.get("body").should("not.contain", "Película para testing editada");
   });
 
   it("Puede borrar la película recientemente agregada por el primer test", () => {
+    cy.visit("http://localhost:7050/peliculas/internacionales");
+    cy.contains("Película para testing editada");
+
     cy.visit("http://localhost:7050/peliculas/eliminar");
 
-    cy.get('input[name="titulo"]').type("Película para testing");
+    cy.get('select[name="titulo"]').select("Película para testing editada");
 
     cy.contains("button", "Eliminar por título").click();
 
-    cy.contains('Película "Película para testing" borrada correctamente.');
+    cy.contains('Película "Película para testing editada" borrada correctamente.');
     cy.visit("http://localhost:7050/peliculas/internacionales");
-    cy.get("body").should("not.contain", "Película para testing");
+    cy.get("body").should("not.contain", "Película para testing editada");
   });
 });
