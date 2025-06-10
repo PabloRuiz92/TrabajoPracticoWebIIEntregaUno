@@ -188,13 +188,27 @@ router.post("/buscar_titulo", async (req, res) => {
 });
 
 // PUT /peliculas/editar - Pagina con formulario para editar peliculas
-router.get("/editar", (req, res) => {
-  res.render("editar", { mensaje: null});
+router.get("/editar", async (req, res) => {
+  try {
+    const titulos = await database.sql`
+      SELECT DISTINCT titulo 
+      FROM peliculas
+      ORDER BY titulo ASC;
+    `;
+
+    res.render("editar", { mensaje: null, titulos });
+  } catch (error) {
+    console.error("Error al buscar datos:", error);
+    res.render("editar", {
+      mensaje: "Error al buscar datos.",
+      titulos: [],
+    });
+  }
 });
 
 // Aca esta el metodo que usa la form para editar peliculas
 router.post("/editar", async (req, res) => {
-  const { tituloViejo, anioViejo, origenViejo, tituloNuevo, anioNuevo, origenNuevo } = req.body;
+  const { tituloViejo, tituloNuevo, anioNuevo, origenNuevo } = req.body;
 
   try {
     // Primero buscamos si el año nuevo ya existe o hay que insertarlo
@@ -218,36 +232,56 @@ router.post("/editar", async (req, res) => {
       anioId = insert[0].id;
     }
 
-    let update = await database.sql`
+    await database.sql`
         UPDATE peliculas
         SET titulo = ${tituloNuevo}, anio_id = ${anioId}, origen_id = ${origenNuevo}
         WHERE titulo = ${tituloViejo}
-        AND anio_id = (SELECT id FROM peliculas_anios WHERE anio = ${anioViejo})
-        AND origen_id = ${origenViejo}
       `;
 
-    // Use el metodo changes que detecta que si se realizo algun cambio en las table peliculas por la query
-    if (update.changes > 0) {
-      res.render("editar", {
-        mensaje: "Película actualizada correctamente.",
-      });
-    } else {
-      res.render("editar", {
-        mensaje:
-          "No se encontró ninguna película que coincida con los datos proporcionados.",
-      });
-    }
+    mensaje= "Película actualizada correctamente.";
+
+    const titulos = await database.sql`
+      SELECT DISTINCT titulo 
+      FROM peliculas
+      ORDER BY titulo ASC;
+    `;
+
+    res.render("editar", { mensaje, titulos });
+
   } catch (error) {
     console.error("Error al editar película:", error);
     res.render("editar", {
       mensaje: "Error al intentar editar la película.",
+      titlos,
     });
   }
 });
 
 // DELETE /peliculas/eliminar - Pagina con formulario para eliminar peliculas por titulo
-router.get("/eliminar", (req, res) => {
-  res.render("eliminar", { mensaje: null });
+router.get("/eliminar", async (req, res) => {
+  try {
+    const ids = await database.sql`
+      SELECT id 
+      FROM peliculas
+      ORDER BY id ASC;
+    `;
+
+    const titulos = await database.sql`
+      SELECT DISTINCT titulo 
+      FROM peliculas
+      ORDER BY titulo ASC;
+    `;
+
+    res.render("eliminar", { mensaje: null, ids, titulos });
+  } catch (error) {
+    console.error("Error al buscar datos:", error);
+
+    res.render("eliminar", {
+      mensaje: "Error al buscar datos.",
+      ids: [],
+      titulos: [],
+    });
+  }
 });
 
 // Aca esta el metodo que usa la form para eliminar peliculas por titulo
@@ -267,20 +301,45 @@ router.post("/eliminar_id", async (req, res) => {
         DELETE FROM peliculas
         WHERE id = ${id};
       `;
-      res.render("eliminar", {
-        mensaje: `Película "${busqueda[0].titulo}" borrada correctamente.`,
-      });
+
+      mensaje= `Película "${busqueda[0].titulo}" borrada correctamente.`;
 
     //Si no existe informamos al usuario
     } else {
-      res.render("eliminar", {
-        mensaje: "No se encontró la película con ese ID. Borrado abortado",
-      });
+      mensaje= "No se encontró la película con ese ID. Borrado abortado";
     }
+
+    const ids = await database.sql`
+      SELECT id 
+      FROM peliculas
+      ORDER BY id ASC;
+    `;
+
+    const titulos = await database.sql`
+      SELECT DISTINCT titulo 
+      FROM peliculas
+      ORDER BY titulo ASC;
+    `;
+
+    res.render("eliminar", { mensaje, ids, titulos });
+
   } catch (error) {
     console.error("Error al borrar película:", error);
+    const ids = await database.sql`
+      SELECT id 
+      FROM peliculas
+      ORDER BY id ASC;
+    `;
+
+    const titulos = await database.sql`
+      SELECT DISTINCT titulo 
+      FROM peliculas
+      ORDER BY titulo ASC;
+    `;
     res.render("eliminar", {
       mensaje: "Error al borrar película.",
+      ids,
+      titulos,
     });
   }
 });
@@ -302,19 +361,43 @@ router.post("/eliminar_titulo", async (req, res) => {
         DELETE FROM peliculas
         WHERE titulo = ${titulo};
       `;
-      res.render("eliminar", {
-        mensaje: `Película "${busqueda[0].titulo}" borrada correctamente.`,
-      });
+
+      mensaje= `Película "${busqueda[0].titulo}" borrada correctamente.`;
 
     } else {
-      res.render("eliminar", {
-        mensaje: "No se encontró la película con ese título. Borrado abortado",
-      });
+      mensaje= "No se encontró la película con ese título. Borrado abortado";
     }
+
+    const ids = await database.sql`
+      SELECT id 
+      FROM peliculas
+      ORDER BY id ASC;
+    `;
+
+    const titulos = await database.sql`
+      SELECT DISTINCT titulo 
+      FROM peliculas
+      ORDER BY titulo ASC;
+    `;
+
+    res.render("eliminar", { mensaje, ids, titulos });
+
   } catch (error) {
-    console.error("Error al borrar película:", error);
+    const ids = await database.sql`
+      SELECT id 
+      FROM peliculas
+      ORDER BY id ASC;
+    `;
+
+    const titulos = await database.sql`
+      SELECT DISTINCT titulo 
+      FROM peliculas
+      ORDER BY titulo ASC;
+    `;
     res.render("eliminar", {
       mensaje: "Error al borrar película.",
+      ids,
+      titulos,
     });
   }
 });

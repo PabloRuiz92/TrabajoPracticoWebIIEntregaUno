@@ -9,16 +9,15 @@
       
         <div class="row mb-3">
             <div class="col-md-12">
-            <input
-                type="number"
-                class="form-control"
-                placeholder="Número de ID de la película"
-                name="id"
-                required
-            />
+                <select class="form-select" name="id" required>
+                    <option value="">Número de ID de la película</option>
+                    <% ids.forEach(item => { %>
+                        <option value="<%= item.id %>"><%= item.id %></option>
+                    <% }); %>
+                </select>
             </div>
         </div>
-  
+
       <h6 class="text-start text-muted">Todos los campos son obligatorios</h6>
   
       <div class="d-grid">
@@ -34,13 +33,12 @@
       
         <div class="row mb-3">
             <div class="col-md-12">
-                <input
-                type="text"
-                class="form-control"
-                placeholder="Título de la película"
-                name="titulo"
-                required
-            />
+                <select class="form-select" name="titulo" required>
+                    <option value="">Título de la película</option>
+                    <% titulos.forEach(item => { %>
+                      <option value="<%= item.titulo %>"><%= item.titulo %></option>
+                    <% }); %>
+                </select>
             </div>
         </div>
   
