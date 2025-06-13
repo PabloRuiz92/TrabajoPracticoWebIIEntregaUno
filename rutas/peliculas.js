@@ -125,7 +125,7 @@ router.post("/buscar_id", async (req, res) => {
   const { id } = req.body;
 
   try {
-    let busqueda = await database.sql`
+    let resultado = await database.sql`
       SELECT p.id, p.titulo, pa.anio, po.origen
       FROM peliculas p
       JOIN peliculas_anios pa ON p.anio_id = pa.id
@@ -133,9 +133,9 @@ router.post("/buscar_id", async (req, res) => {
       WHERE p.id = ${id}
     `;
 
-    if (busqueda.length > 0) {
+    if (resultado.length > 0) {
       res.render("buscar", {
-        busqueda: busqueda[0],
+        busqueda: resultado[0],
         mensaje: "Película encontrada.",
       });
     } else {
@@ -159,7 +159,7 @@ router.post("/buscar_titulo", async (req, res) => {
   const { titulo } = req.body;
 
   try {
-    let busqueda = await database.sql`
+    let resultado = await database.sql`
         SELECT p.id, p.titulo, pa.anio, po.origen
         FROM peliculas p
         JOIN peliculas_anios pa ON p.anio_id = pa.id
@@ -167,9 +167,9 @@ router.post("/buscar_titulo", async (req, res) => {
         WHERE p.titulo = ${titulo}
       `;
 
-    if (busqueda.length > 0) {
+    if (resultado.length > 0) {
       res.render("buscar", {
-        busqueda: busqueda[0],
+        busqueda: resultado[0],
         mensaje: "Película encontrada.",
       });
     } else {
@@ -252,7 +252,7 @@ router.post("/editar", async (req, res) => {
     console.error("Error al editar película:", error);
     res.render("editar", {
       mensaje: "Error al intentar editar la película.",
-      titlos,
+      titulos,
     });
   }
 });
